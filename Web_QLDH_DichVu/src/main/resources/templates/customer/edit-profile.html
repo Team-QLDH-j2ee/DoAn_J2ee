@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thông tin cá nhân - SMM Panel</title>
+    <title>Chỉnh sửa thông tin - SMM Panel</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,67 +80,41 @@
                         </li>
                     </ul>
                 </div>
+
             </div>
         </div>
     </div>
 </nav>
 
-<div class="container mt-4 mb-5">
-
-    <div th:if="${success}" class="alert alert-success border-0 shadow-sm mb-4 py-3 text-center"
-         style="border-radius: 15px; background-color: #d1e7dd; color: #0f5132; font-weight: 600;">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        <span th:text="${success}">Cập nhật thành công!</span>
-    </div>
-
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
+        <div class="col-md-6 col-lg-5">
             <div class="card shadow-sm border-0" style="border-radius: 20px;">
                 <div class="card-body p-5">
 
                     <div class="text-center mb-4">
-                        <div class="d-inline-flex align-items-center justify-content-center bg-primary-custom text-white rounded-circle mb-3 shadow-sm" style="width: 80px; height: 80px; font-size: 2.5rem;">
-                            <i class="bi bi-person"></i>
+                        <h3 class="fw-bold text-primary-custom">Chỉnh sửa hồ sơ</h3>
+                        <p class="text-neutral">Cập nhật thông tin cá nhân của bạn</p>
+                    </div>
+
+                    <form th:action="@{/user/update}" method="post" th:object="${user}">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-neutral small" style="letter-spacing: 1px;">TÊN HIỂN THỊ</label>
+                            <input type="text" th:field="*{fullName}" class="form-control form-control-lg rounded-pill px-4 text-dark" placeholder="Nhập tên hiển thị của bạn">
                         </div>
-                        <h3 class="fw-bold mb-0 text-dark" th:text="${user.fullName != null ? user.fullName : user.username}">Tên người dùng</h3>
-                        <p class="text-neutral mt-1" th:text="'@' + ${user.username}">@username</p>
-                    </div>
 
-                    <hr style="border-color: #e2e8f0;">
-
-                    <div class="mb-4 mt-4">
-                        <label class="text-neutral small fw-bold mb-1" style="letter-spacing: 1px;">ĐỊA CHỈ EMAIL</label>
-                        <div class="fs-5 fw-medium text-dark" th:text="${user.email != null ? user.email : 'Chưa cập nhật'}">email@example.com</div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="text-neutral small fw-bold mb-1" style="letter-spacing: 1px;">SỐ DƯ TÀI KHOẢN</label>
-                        <div class="fs-2 fw-bold" style="color: var(--brand-secondary);">
-                            <span th:text="${#numbers.formatDecimal(user.balance, 0, 'COMMA', 0, 'POINT')}">0</span> đ
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-neutral small" style="letter-spacing: 1px;">ĐỊA CHỈ EMAIL</label>
+                            <input type="email" th:field="*{email}" class="form-control form-control-lg rounded-pill px-4 text-dark" placeholder="Nhập email liên hệ">
                         </div>
-                    </div>
 
-                    <div class="row mb-5">
-                        <div class="col-6">
-                            <label class="text-neutral small fw-bold mb-2" style="letter-spacing: 1px;">VAI TRÒ</label>
-                            <div>
-                                <span class="badge bg-primary-custom px-3 py-2 rounded-pill" th:if="${user.role.name() == 'ADMIN'}">Quản trị viên</span>
-                                <span class="badge bg-secondary px-3 py-2 rounded-pill" th:if="${user.role.name() == 'CUSTOMER'}">Khách hàng</span>
-                            </div>
+                        <div class="d-grid gap-3 mt-5">
+                            <button type="submit" class="btn btn-custom-solid btn-lg">Lưu thay đổi</button>
+                            <a th:href="@{/user/profile}" class="btn btn-light-gray btn-lg text-decoration-none text-center fw-bold">Hủy bỏ</a>
                         </div>
-                        <div class="col-6">
-                            <label class="text-neutral small fw-bold mb-2" style="letter-spacing: 1px;">TRẠNG THÁI</label>
-                            <div>
-                                <span class="badge px-3 py-2 rounded-pill" style="background-color: #d1e7dd; color: #0f5132;" th:if="${!user.isLocked}">Hoạt động</span>
-                                <span class="badge px-3 py-2 rounded-pill" style="background-color: #f8d7da; color: #842029;" th:if="${user.isLocked}">Bị khóa</span>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="d-grid gap-3">
-                        <a th:href="@{/user/edit}" class="btn btn-custom-outline btn-lg">Chỉnh sửa thông tin</a>
-                        <a th:href="@{/user/recharge}" class="btn btn-custom-solid btn-lg" style="background-color: var(--brand-secondary); border-color: var(--brand-secondary);">Nạp thêm tiền</a>
-                    </div>
+                    </form>
 
                 </div>
             </div>
