@@ -4,12 +4,26 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 
-@Entity @Table(name = "service_settings")
-@Data @NoArgsConstructor @AllArgsConstructor @Builder
+@Entity
+@Table(name = "service_settings")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ServiceSetting {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false) private String serviceName;
-    @Column(precision = 15, scale = 2, nullable = false) private BigDecimal basePrice;
+
+    @Column(nullable = false)
+    private String serviceName;
+
+    // Bổ sung thêm trường phân loại nền tảng
+    @Column(nullable = false)
+    private String platform;
+
+    @Column(precision = 15, scale = 2, nullable = false)
+    private BigDecimal basePrice;
+
     private int defaultQuantity;
 }

@@ -23,9 +23,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        // ĐÃ SỬA: Dùng hasRole("ADMIN") thay vì hasAuthority("ADMIN")
+                        // Spring sẽ tự động check chuỗi "ROLE_ADMIN" khớp với UserDetailsService
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
                         // Những đường dẫn ai cũng vào được
                         .requestMatchers("/", "/login", "/register", "/css/**", "/js/**").permitAll()
-                        // Mọi đường dẫn khác đều yêu cầu đăng nhập
+
+                        // Mọi đường dẫn khác (như /order/**) đều yêu cầu phải đăng nhập
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Quản Lý Dịch Vụ SMM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .card-custom { border-radius: 15px; border: none; }
+        .btn-gradient { background: linear-gradient(45deg, #0d6efd, #0dcaf0); color: white; border: none; }
+        .btn-gradient:hover { background: linear-gradient(45deg, #0b5ed7, #31d2f2); color: white; }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-dark mb-4 shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/admin/services">
+            <i class="bi bi-shield-lock-fill text-warning me-2"></i>SMM ADMIN PANEL
+        </a>
+        <div class="d-flex text-white align-items-center">
+            <span class="me-3">Xin chào Sếp, <b class="text-info">Admin</b></span>
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <button type="submit" class="btn btn-sm btn-outline-light">Đăng xuất</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div th:if="${successMessage}" class="alert alert-success border-0 shadow-sm" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger border-0 shadow-sm" th:text="${errorMessage}"></div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm card-custom">
+                <div class="card-header bg-primary text-white text-center py-3" style="border-radius: 15px 15px 0 0;">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2"></i>Thêm Dịch Vụ</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/admin/services/add}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nền tảng</label>
+                            <select name="platform" class="form-select" required>
+                                <option value="INSTAGRAM">Instagram</option>
+                                <option value="FACEBOOK">Facebook</option>
+                                <option value="TIKTOK">TikTok</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên Dịch Vụ</label>
+                            <input type="text" name="serviceName" class="form-control" placeholder="VD: Tăng Follower Instagram" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Đơn Giá (VNĐ / 1 lượt)</label>
+                            <input type="number" name="basePrice" class="form-control" placeholder="VD: 100" min="1" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Số lượng đặt tối thiểu</label>
+                            <input type="number" name="defaultQuantity" class="form-control" placeholder="VD: 100" min="1" value="100" required>
+                        </div>
+                        <button type="submit" class="btn btn-gradient w-100 py-2 fw-bold shadow-sm">
+                            <i class="bi bi-save me-2"></i>LƯU DỊCH VỤ
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm card-custom h-100">
+                <div class="card-header bg-white py-3" style="border-radius: 15px 15px 0 0; border-bottom: 2px solid #f8f9fa;">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-list-ul me-2 text-primary"></i>Danh Sách Dịch Vụ Hệ Thống</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">ID</th>
+                                <th>Nền Tảng</th> <th>Tên Dịch Vụ</th>
+                                <th>Đơn Giá</th>
+                                <th>Tối Thiểu</th>
+                                <th class="text-end pe-4">Thao Tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${#lists.isEmpty(services)}">
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                    Chưa có dịch vụ nào. Hãy thêm dịch vụ mới ở form bên cạnh!
+                                </td>
+                            </tr>
+                            <tr th:each="srv : ${services}">
+                                <td class="ps-4 fw-bold text-muted" th:text="'#' + ${srv.id}"></td>
+
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${srv.platform == 'FACEBOOK' ? 'bg-primary' : (srv.platform == 'INSTAGRAM' ? 'bg-danger' : (srv.platform == 'TIKTOK' ? 'bg-dark' : 'bg-secondary'))}"
+                                          th:text="${srv.platform != null ? srv.platform : 'CHƯA CẬP NHẬT'}">
+                                    </span>
+                                </td>
+
+                                <td class="fw-bold text-primary" th:text="${srv.serviceName}"></td>
+                                <td><span class="badge bg-success" th:text="${#numbers.formatDecimal(srv.basePrice, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span></td>
+                                <td th:text="${srv.defaultQuantity}"></td>
+                                <td class="text-end pe-4 text-nowrap">
+
+                                    <button type="button" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" th:data-bs-target="'#editModal' + ${srv.id}">
+                                        <i class="bi bi-pencil-square"></i> Sửa
+                                    </button>
+
+                                    <form th:action="@{/admin/services/delete/{id}(id=${srv.id})}" method="post" class="d-inline"
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn xóa dịch vụ này không?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i> Xóa
+                                        </button>
+                                    </form>
+
+                                    <div class="modal fade" th:id="'editModal' + ${srv.id}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content text-start border-0 shadow">
+                                                <form th:action="@{/admin/services/edit/{id}(id=${srv.id})}" method="post">
+                                                    <div class="modal-header bg-primary text-white">
+                                                        <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Cập Nhật Dịch Vụ #<span th:text="${srv.id}"></span></h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body p-4">
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold">Nền tảng</label>
+                                                            <select name="platform" class="form-select" required>
+                                                                <option value="INSTAGRAM" th:selected="${srv.platform == 'INSTAGRAM'}">Instagram</option>
+                                                                <option value="FACEBOOK" th:selected="${srv.platform == 'FACEBOOK'}">Facebook</option>
+                                                                <option value="TIKTOK" th:selected="${srv.platform == 'TIKTOK'}">TikTok</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold">Tên Dịch Vụ</label>
+                                                            <input type="text" name="serviceName" class="form-control" th:value="${srv.serviceName}" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold">Đơn Giá (VNĐ / 1 lượt)</label>
+                                                            <input type="number" name="basePrice" class="form-control" th:value="${srv.basePrice}" min="1" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-bold">Số lượng đặt tối thiểu</label>
+                                                            <input type="number" name="defaultQuantity" class="form-control" th:value="${srv.defaultQuantity}" min="1" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer bg-light">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy Bỏ</button>
+                                                        <button type="submit" class="btn btn-primary fw-bold">Lưu Thay Đổi</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
