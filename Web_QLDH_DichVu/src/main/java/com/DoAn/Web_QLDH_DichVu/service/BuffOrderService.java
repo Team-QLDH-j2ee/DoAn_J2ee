@@ -1,10 +1,12 @@
 package com.DoAn.Web_QLDH_DichVu.service;
 
 import com.DoAn.Web_QLDH_DichVu.entity.BuffOrder;
+import com.DoAn.Web_QLDH_DichVu.entity.Notification;
 import com.DoAn.Web_QLDH_DichVu.entity.ServiceSetting;
 import com.DoAn.Web_QLDH_DichVu.entity.User;
 import com.DoAn.Web_QLDH_DichVu.enums.OrderStatus;
 import com.DoAn.Web_QLDH_DichVu.repository.BuffOrderRepository;
+import com.DoAn.Web_QLDH_DichVu.repository.NotificationRepository;
 import com.DoAn.Web_QLDH_DichVu.repository.ServiceSettingRepository;
 import com.DoAn.Web_QLDH_DichVu.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,9 @@ public class BuffOrderService {
     private final UserRepository userRepo;
     private final ServiceSettingRepository settingRepo;
     private final ScraperService scraperService;
+
+    // ĐÃ THÊM KHO THÔNG BÁO VÀO ĐÂY
+    private final NotificationRepository notificationRepo;
 
     // 1. TẠO ĐƠN (KHÔNG TRỪ TIỀN)
     @Transactional(rollbackFor = Exception.class)
@@ -139,5 +144,44 @@ public class BuffOrderService {
         order.setPrice(unitPrice.multiply(BigDecimal.valueOf(newQuantity)));
 
         orderRepo.save(order);
+    }
+
+    // ================== DÀNH CHO ADMIN ==================
+
+    // Lấy tất cả đơn hàng của hệ thống (Sắp xếp mới nhất lên đầu)
+    public java.util.List<BuffOrder> getAllOrdersForAdmin() {
+        // Nếu sếp có custom query trong Repo thì xài, không thì dùng findAll() stream
+        return orderRepo.findAll().stream()
+                .sorted((o1, o2) -> {
+                    // Sắp xếp theo ID giảm dần (đơn mới nhất lên đầu) nếu không có createdAt
+                    return o2.getId().compareTo(o1.getId());
+                })
+                .toList();
+    }
+
+    // Admin cập nhật trạng thái đơn hàng (ĐÃ THÊM LOGIC BẮN THÔNG BÁO)
+    @Transactional(rollbackFor = Exception.class)
+    public void updateOrderStatusByAdmin(Long orderId, OrderStatus newStatus) {
+        BuffOrder order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại."));
+
+        order.setStatus(newStatus);
+        orderRepo.save(order);
+
+        // Dịch trạng thái sang Tiếng Việt cho sinh động
+        String statusVn = "";
+        switch (newStatus.name()) {
+            case "IN_PROGRESS": statusVn = "ĐANG CHẠY 🚀"; break;
+            case "COMPLETED": statusVn = "HOÀN THÀNH ✅"; break;
+            case "CANCELLED": statusVn = "ĐÃ HỦY ❌"; break;
+            default: statusVn = "CHỜ XỬ LÝ ⏳";
+        }
+
+        // Tự động bắn thông báo cho Khách hàng
+        notificationRepo.save(Notification.builder()
+                .user(order.getUser())
+                .message("📦 Đơn hàng #" + order.getId() + " (" + order.getTargetLink() + ") vừa được cập nhật sang trạng thái: " + statusVn)
+                .isRead(false)
+                .build());
     }
 }

@@ -8,22 +8,11 @@
     <style>
         .card-custom { border-radius: 15px; border: none; }
     </style>
+    <th:block th:replace="~{fragments/navbar :: nav-styles}"></th:block>
 </head>
 <body class="bg-light">
 
-<nav class="navbar navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/">SMM PANEL SYSTEM</a>
-        <div class="d-flex text-white align-items-center" th:if="${currentUser}">
-            <span class="me-3">Chào, <b th:text="${currentUser.username}"></b></span>
-            <span class="badge bg-success me-3 p-2">Số dư: <span th:text="${#numbers.formatDecimal(currentUser.balance, 0, 'COMMA', 0, 'POINT')}"></span> VNĐ</span>
-            <a th:href="@{/order/create}" class="btn btn-sm btn-primary me-2">Đặt Đơn Mới</a>
-            <form th:action="@{/logout}" method="post" class="m-0">
-                <button type="submit" class="btn btn-sm btn-outline-light">Đăng xuất</button>
-            </form>
-        </div>
-    </div>
-</nav>
+<nav th:replace="~{fragments/navbar :: customer-nav}"></nav>
 
 <div class="container pb-5">
     <div class="card shadow card-custom">

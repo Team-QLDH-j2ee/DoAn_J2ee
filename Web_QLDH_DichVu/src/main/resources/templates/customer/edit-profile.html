@@ -12,79 +12,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <head th:replace="~{fragments/navbar :: nav-styles}"></head>
 </head>
 <body class="bg-light-purple" style="background-color: #f8f9fe; min-height: 100vh;">
 
-<nav class="navbar navbar-expand-lg bg-white sticky-top py-3 shadow-sm">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="/">
-            <span class="text-dark">SMM Panel</span>
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link" href="/">Trang Chủ</a></li>
-                <li class="nav-item"><a class="nav-link" href="/#services">Dịch Vụ</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Giá Cả</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Liên Hệ</a></li>
-            </ul>
-
-            <div class="d-flex align-items-center gap-3">
-                <a th:href="@{/orders/history}" class="btn btn-custom-outline btn-sm">Dashboard</a>
-
-                <div class="dropdown">
-                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-person-circle text-primary" style="font-size: 1.8rem;"></i>
-                        <span class="ms-2 fw-bold text-dark" th:text="${user != null ? user.username : 'Profile'}">Profile</span>
-                    </a>
-
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3" aria-labelledby="profileDropdown" style="border-radius: 12px; min-width: 220px;">
-                        <li>
-                            <div class="dropdown-header d-flex flex-column">
-                                <span class="fw-bold text-dark fs-6" th:text="${user != null && user.fullName != null ? user.fullName : (user != null ? user.username : 'Thành viên')}">Tên người dùng</span>
-                                <small class="text-muted" th:text="${user != null && user.email != null ? user.email : 'Chưa cập nhật email'}">email@example.com</small>
-                            </div>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-
-                        <li>
-                            <a class="dropdown-item py-2 d-flex align-items-center" th:href="@{/}">
-                                <i class="bi bi-house me-2 text-secondary fs-5"></i> Quay lại trang chủ
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item py-2 d-flex align-items-center" th:href="@{/user/profile}">
-                                <i class="bi bi-person me-2 text-primary fs-5"></i> Trang cá nhân
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="dropdown-item py-2 d-flex align-items-center" th:href="@{/user/recharge}">
-                                <i class="bi bi-wallet2 me-2 text-success fs-5"></i> Nạp tiền
-                            </a>
-                        </li>
-
-                        <li><hr class="dropdown-divider"></li>
-
-                        <li>
-                            <form th:action="@{/logout}" method="post" class="m-0">
-                                <button type="submit" class="dropdown-item py-2 text-danger d-flex align-items-center fw-bold">
-                                    <i class="bi bi-box-arrow-right me-2 fs-5"></i> Đăng xuất
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</nav>
+<nav th:replace="~{fragments/navbar :: customer-nav}"></nav>
 
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">

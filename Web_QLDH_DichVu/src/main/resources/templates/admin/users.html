@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Quản Lý Thành Viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .card-custom { border-radius: 15px; border: none; }
+        .table-custom th { background-color: #f8f9fa; font-weight: 600; }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold text-warning" href="/admin/dashboard">
+            <i class="bi bi-shield-lock-fill me-2"></i>ADMIN DASHBOARD
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="adminNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link admin-nav-link" href="/admin/dashboard"><i class="bi bi-speedometer2 me-1"></i>Tổng Quan</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link admin-nav-link" href="/admin/services"><i class="bi bi-grid me-1"></i>Quản Lý Dịch Vụ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link admin-nav-link" href="/admin/orders"><i class="bi bi-cart-check me-1"></i>Quản Lý Đơn Hàng</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link admin-nav-link" href="/admin/recharge"><i class="bi bi-cash-coin me-1"></i>Duyệt Nạp Tiền</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link admin-nav-link" href="/admin/users"><i class="bi bi-people me-1"></i>Quản Lý Thành Viên</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center text-white border-start border-secondary ps-3 ms-3">
+                <i class="bi bi-person-circle fs-4 text-info me-2"></i>
+                <span class="me-3">Chào Chủ Tịch, <b class="text-warning">Sơn Đại Ka</b></span>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="btn btn-sm btn-danger fw-bold shadow-sm">
+                        <i class="bi bi-power me-1"></i>Đăng xuất
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var currentPath = window.location.pathname;
+        var navLinks = document.querySelectorAll('.admin-nav-link');
+        navLinks.forEach(function(link) {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active', 'fw-bold', 'text-white');
+            }
+        });
+    });
+</script>
+
+<div class="container-fluid px-4 pb-5">
+    <div class="card shadow-sm card-custom">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center" style="border-radius: 15px 15px 0 0; border-bottom: 2px solid #f8f9fa;">
+            <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-people text-primary me-2"></i>Danh Sách Thành Viên</h5>
+            <button type="button" class="btn btn-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                <i class="bi bi-plus-circle me-1"></i> Thêm Mới
+            </button>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="p-3">
+                <div th:if="${successMessage}" class="alert alert-success border-0 shadow-sm" th:text="${successMessage}"></div>
+                <div th:if="${errorMessage}" class="alert alert-danger border-0 shadow-sm" th:text="${errorMessage}"></div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 table-custom">
+                    <thead>
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Tài Khoản</th>
+                        <th>Email</th>
+                        <th>Số Dư</th>
+                        <th>Trạng Thái</th>
+                        <th class="text-end pe-4">Thao Tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="u : ${users}">
+                        <td class="ps-4 fw-bold text-muted" th:text="'#' + ${u.id}"></td>
+
+                        <td>
+                            <div class="fw-bold text-dark" th:text="${u.username}"></div>
+                            <span class="badge bg-danger mt-1" th:if="${u.role.name() == 'ADMIN'}"><i class="bi bi-shield-lock"></i> Quản Trị Viên</span>
+                            <span class="badge bg-secondary mt-1" th:if="${u.role.name() == 'CUSTOMER'}"><i class="bi bi-person"></i> Khách Hàng</span>
+                        </td>
+
+                        <td th:text="${u.email}"></td>
+
+                        <td class="fw-bold text-success fs-5" th:text="${#numbers.formatDecimal(u.balance, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+
+                        <td>
+                            <span th:if="${!u.isLocked()}" class="badge bg-success px-2 py-1"><i class="bi bi-check-circle"></i> Hoạt động</span>
+                            <span th:if="${u.isLocked()}" class="badge bg-danger px-2 py-1"><i class="bi bi-lock-fill"></i> Đã bị khóa</span>
+                        </td>
+
+                        <td class="text-end pe-4 text-nowrap">
+
+                            <button type="button" class="btn btn-sm btn-outline-primary fw-bold shadow-sm" data-bs-toggle="modal" th:data-bs-target="'#editUserModal' + ${u.id}" title="Chỉnh Sửa">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+
+                            <form th:if="${u.role.name() == 'CUSTOMER'}" th:action="@{/admin/users/toggle-lock/{id}(id=${u.id})}" method="post" class="d-inline"
+                                  onsubmit="return confirm('Bạn có chắc chắn muốn đổi trạng thái đăng nhập của tài khoản này?');">
+                                <button type="submit" class="btn btn-sm shadow-sm fw-bold" th:classappend="${u.isLocked() ? 'btn-success' : 'btn-outline-warning'}" th:title="${u.isLocked() ? 'Mở Khóa' : 'Khóa Tài Khoản'}">
+                                    <i class="bi" th:classappend="${u.isLocked() ? 'bi-unlock' : 'bi-lock'}"></i>
+                                </button>
+                            </form>
+
+                            <form th:if="${u.role.name() == 'CUSTOMER'}" th:action="@{/admin/users/delete/{id}(id=${u.id})}" method="post" class="d-inline"
+                                  onsubmit="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản này không? Mọi dữ liệu sẽ biến mất!');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger fw-bold shadow-sm" title="Xóa Tài Khoản">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </form>
+
+                            <span th:if="${u.role.name() == 'ADMIN'}" class="text-danger fw-bold ms-2" style="font-size: 0.85rem;"><i class="bi bi-shield-check"></i> Bất tử</span>
+
+                            <div class="modal fade" th:id="'editUserModal' + ${u.id}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content text-start border-0 shadow">
+                                        <form th:action="@{/admin/users/update/{id}(id=${u.id})}" method="post">
+                                            <div class="modal-header bg-primary text-white">
+                                                <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Sửa Tài Khoản: <span th:text="${u.username}"></span></h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body p-4">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Email</label>
+                                                    <input type="email" name="email" class="form-control" th:value="${u.email}" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Phân Quyền (Role)</label>
+                                                    <select name="role" class="form-select" required>
+                                                        <option value="CUSTOMER" th:selected="${u.role.name() == 'CUSTOMER'}">Khách Hàng (CUSTOMER)</option>
+                                                        <option value="ADMIN" th:selected="${u.role.name() == 'ADMIN'}">Quản Trị Viên (ADMIN)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold text-danger">Đổi Mật Khẩu Mới</label>
+                                                    <input type="password" name="password" class="form-control" placeholder="Bỏ trống nếu không muốn đổi mật khẩu">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer bg-light">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                <button type="submit" class="btn btn-primary fw-bold">Lưu Thay Đổi</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <form th:action="@{/admin/users/create}" method="post">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-person-plus-fill me-2"></i>Tạo Người Dùng Mới</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tên đăng nhập (Username)</label>
+                        <input type="text" name="username" class="form-control" placeholder="Nhập username (viết liền không dấu)" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mật khẩu</label>
+                        <input type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Email</label>
+                        <input type="email" name="email" class="form-control" placeholder="Nhập địa chỉ email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Phân Quyền</label>
+                        <select name="role" class="form-select" required>
+                            <option value="CUSTOMER">Khách Hàng (CUSTOMER)</option>
+                            <option value="ADMIN" class="text-danger fw-bold">Quản Trị Viên (ADMIN)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-success fw-bold">Tạo Tài Khoản</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

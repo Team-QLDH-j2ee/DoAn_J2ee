@@ -13,19 +13,58 @@
 </head>
 <body class="bg-light">
 
-<nav class="navbar navbar-dark bg-dark mb-4 shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/admin/services">
-            <i class="bi bi-shield-lock-fill text-warning me-2"></i>SMM ADMIN PANEL
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold text-warning" href="/admin/dashboard">
+            <i class="bi bi-shield-lock-fill me-2"></i>ADMIN DASHBOARD
         </a>
-        <div class="d-flex text-white align-items-center">
-            <span class="me-3">Xin chào Sếp, <b class="text-info">Admin</b></span>
-            <form th:action="@{/logout}" method="post" class="m-0">
-                <button type="submit" class="btn btn-sm btn-outline-light">Đăng xuất</button>
-            </form>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="adminNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link admin-nav-link" href="/admin/dashboard"><i class="bi bi-speedometer2 me-1"></i>Tổng Quan</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link admin-nav-link" href="/admin/services"><i class="bi bi-grid me-1"></i>Quản Lý Dịch Vụ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link admin-nav-link" href="/admin/orders"><i class="bi bi-cart-check me-1"></i>Quản Lý Đơn Hàng</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link admin-nav-link" href="/admin/recharge"><i class="bi bi-cash-coin me-1"></i>Duyệt Nạp Tiền</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link admin-nav-link" href="/admin/users"><i class="bi bi-people me-1"></i>Quản Lý Thành Viên</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center text-white border-start border-secondary ps-3 ms-3">
+                <i class="bi bi-person-circle fs-4 text-info me-2"></i>
+                <span class="me-3">Chào Chủ Tịch, <b class="text-warning">Sơn Đại Ka</b></span>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="btn btn-sm btn-danger fw-bold shadow-sm">
+                        <i class="bi bi-power me-1"></i>Đăng xuất
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </nav>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var currentPath = window.location.pathname;
+        var navLinks = document.querySelectorAll('.admin-nav-link');
+        navLinks.forEach(function(link) {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active', 'fw-bold', 'text-white');
+            }
+        });
+    });
+</script>
+
+
 
 <div class="container">
 
