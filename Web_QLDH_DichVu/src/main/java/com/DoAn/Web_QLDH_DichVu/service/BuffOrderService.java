@@ -11,6 +11,9 @@ import com.DoAn.Web_QLDH_DichVu.repository.ServiceSettingRepository;
 import com.DoAn.Web_QLDH_DichVu.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,16 +94,15 @@ public class BuffOrderService {
         log.info("Thanh toán thành công đơn #{} cho User: {}", orderId, username);
     }
 
-    // 3. LẤY DANH SÁCH ĐƠN CỦA USER
-    public java.util.List<BuffOrder> getUserOrders(String username) {
+    // 3. LẤY DANH SÁCH ĐƠN CỦA USER (ĐÃ SỬA THÀNH PHÂN TRANG)
+    public Page<BuffOrder> getUserOrdersPaginated(String username, int pageNo, int pageSize) {
         User user = userRepo.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại."));
-        // Cần thêm hàm findByUserOrderByCreatedAtDesc trong BuffOrderRepository
-        // Tạm thời dùng findAll() lọc bằng stream hoặc sếp viết thêm query trong Repo nhé
-        return orderRepo.findAll().stream()
-                .filter(o -> o.getUser().getId().equals(user.getId()))
-                .sorted((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()))
-                .toList();
+
+        // Pageable đếm từ 0, nên trang số 1 ở view truyền xuống phải -1
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+
+        return orderRepo.findByUserOrderByCreatedAtDesc(user, pageable);
     }
 
     // --- CÁC HÀM MỚI BỔ SUNG CHO TÍNH NĂNG SỬA/HỦY ---

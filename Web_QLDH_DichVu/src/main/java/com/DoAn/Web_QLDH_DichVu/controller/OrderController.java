@@ -1,11 +1,13 @@
 package com.DoAn.Web_QLDH_DichVu.controller;
 
+import com.DoAn.Web_QLDH_DichVu.entity.BuffOrder;
 import com.DoAn.Web_QLDH_DichVu.entity.ServiceSetting;
 import com.DoAn.Web_QLDH_DichVu.entity.User;
 import com.DoAn.Web_QLDH_DichVu.repository.ServiceSettingRepository;
 import com.DoAn.Web_QLDH_DichVu.repository.UserRepository;
 import com.DoAn.Web_QLDH_DichVu.service.BuffOrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +15,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/order")
@@ -62,13 +63,24 @@ public class OrderController {
         }
     }
 
-    // MỚI: Trang Lịch sử đơn hàng
+    // ĐÃ NÂNG CẤP LỊCH SỬ ĐƠN HÀNG THÀNH PHÂN TRANG
     @GetMapping("/history")
-    public String showOrderHistory(Model model, Principal principal) {
+    public String showOrderHistory(
+            @RequestParam(value = "page", defaultValue = "1") int page, // Bắt tham số page, mặc định 1
+            Model model,
+            Principal principal) {
+
         if (principal == null) return "redirect:/login";
 
         userRepo.findByUsername(principal.getName()).ifPresent(user -> model.addAttribute("currentUser", user));
-        model.addAttribute("orders", orderService.getUserOrders(principal.getName()));
+
+        int pageSize = 10; // Cài đặt 10 đơn mỗi trang
+        Page<BuffOrder> pageData = orderService.getUserOrdersPaginated(principal.getName(), page, pageSize);
+
+        // Ném các thông số ra View
+        model.addAttribute("orders", pageData.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageData.getTotalPages());
 
         return "order/history";
     }
