@@ -1,6 +1,8 @@
 package com.DoAn.Web_QLDH_DichVu.repository;
 
 import com.DoAn.Web_QLDH_DichVu.entity.ServiceSetting;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

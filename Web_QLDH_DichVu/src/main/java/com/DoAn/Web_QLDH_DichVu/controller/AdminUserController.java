@@ -11,6 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 
@@ -27,8 +31,20 @@ public class AdminUserController {
 
     // 1. Hiển thị danh sách thành viên
     @GetMapping
-    public String manageUsers(Model model) {
-        model.addAttribute("users", userRepository.findAll());
+    public String manageUsers(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            Model model) {
+
+        int pageSize = 5;
+        // Xếp theo ID giảm dần (User mới đăng ký lên đầu)
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<com.DoAn.Web_QLDH_DichVu.entity.User> pageData = userRepository.findAll(pageable);
+
+        model.addAttribute("users", pageData.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageData.getTotalPages());
+
         return "admin/users";
     }
 

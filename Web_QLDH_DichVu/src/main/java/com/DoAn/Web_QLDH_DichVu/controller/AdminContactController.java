@@ -10,6 +10,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -24,15 +29,26 @@ public class AdminContactController {
     private final NotificationRepository notificationRepo; // Bơm kho chuông vào
 
     // 1. Mở trang danh sách tin nhắn
+
     @GetMapping
-    public String listContacts(Model model, Principal principal) {
+    public String listContacts(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            Model model,
+            Principal principal) {
+
         if (principal != null) {
             model.addAttribute("username", principal.getName());
         }
 
-        // Lấy tất cả tin nhắn, xếp mới nhất lên đầu
-        List<ContactMessage> messages = contactRepo.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
-        model.addAttribute("messages", messages);
+        int pageSize = 5; // 10 tin nhắn 1 trang
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<ContactMessage> pageData = contactRepo.findAll(pageable);
+
+        model.addAttribute("messages", pageData.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageData.getTotalPages());
+
         return "admin/contacts";
     }
 

@@ -3,6 +3,10 @@ package com.DoAn.Web_QLDH_DichVu.controller;
 import com.DoAn.Web_QLDH_DichVu.entity.ServiceSetting;
 import com.DoAn.Web_QLDH_DichVu.repository.ServiceSettingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +21,21 @@ public class AdminServiceController {
 
     private final ServiceSettingRepository settingRepo;
 
-    // 1. Hiển thị trang quản lý (Bao gồm form thêm và bảng danh sách)
+    // 1. Hiển thị trang quản lý (CÓ PHÂN TRANG)
     @GetMapping
-    public String manageServices(Model model) {
-        model.addAttribute("services", settingRepo.findAll());
+    public String manageServices(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            Model model) {
+
+        int pageSize = 5; // Cài 5 dịch vụ/trang để bảng không bị dài hơn form bên trái
+        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+
+        Page<ServiceSetting> pageData = settingRepo.findAll(pageable);
+
+        model.addAttribute("services", pageData.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pageData.getTotalPages());
+
         return "admin/services"; // Trỏ tới file templates/admin/services.html
     }
 

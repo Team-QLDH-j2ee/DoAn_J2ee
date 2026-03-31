@@ -128,7 +128,21 @@
                     </tr>
                     </tbody>
                 </table>
+
             </div>
+            <nav th:if="${totalPages > 1}" aria-label="Page navigation" class="mt-4 mb-3">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                        <a class="page-link shadow-sm" th:href="@{/admin/orders(page=${currentPage - 1})}"><i class="bi bi-chevron-left"></i> Trước</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${currentPage == i ? 'active' : ''}">
+                        <a class="page-link shadow-sm" th:href="@{/admin/orders(page=${i})}" th:text="${i}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
+                        <a class="page-link shadow-sm" th:href="@{/admin/orders(page=${currentPage + 1})}">Sau <i class="bi bi-chevron-right"></i></a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 </div>
