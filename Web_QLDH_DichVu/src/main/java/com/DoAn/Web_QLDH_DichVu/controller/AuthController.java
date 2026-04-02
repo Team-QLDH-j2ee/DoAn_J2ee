@@ -10,6 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.UUID;
+
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
@@ -33,6 +35,7 @@ public class AuthController {
     // 3. Xử lý logic Đăng ký
     @PostMapping("/register")
     public String processRegister(User user, Model model) {
+
         // Kiểm tra trùng Username
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             model.addAttribute("error", "Tên đăng nhập đã tồn tại!");
@@ -45,16 +48,18 @@ public class AuthController {
             return "auth/register";
         }
 
-        // Mã hóa mật khẩu trước khi lưu
+        // Mã hóa mật khẩu
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        // Set quyền mặc định là CUSTOMER (Khách hàng)
+        // Set role
         user.setRole(Role.CUSTOMER);
 
-        // Lưu xuống DB
+        // 🔥 THÊM DÒNG NÀY
+        user.setRechargeCode("NAP" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+
+        // Lưu DB
         userRepository.save(user);
 
-        // Đăng ký xong chuyển hướng về trang login kèm thông báo thành công
         return "redirect:/login?success";
     }
 }

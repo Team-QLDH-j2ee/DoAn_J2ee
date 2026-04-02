@@ -17,4 +17,8 @@ public class User {
     @Column(precision = 15, scale = 2) private BigDecimal balance = BigDecimal.ZERO;
     @Enumerated(EnumType.STRING) private Role role;
     private boolean isLocked = false;
+
+    //cau hinh naptien
+    @Column(unique = true)
+    private String rechargeCode;
 }

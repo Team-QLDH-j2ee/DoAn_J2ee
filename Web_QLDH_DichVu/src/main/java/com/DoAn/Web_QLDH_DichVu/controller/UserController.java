@@ -76,10 +76,25 @@ public class UserController {
         if (principal == null) return "redirect:/login";
 
         User currentUser = userRepository.findByUsername(principal.getName()).orElse(null);
+
+        // ========================
+        // 🔥 TẠO QR VIETQR
+        // ========================
+        String bank = "MB"; // đổi nếu cần
+        String account = "0389306604"; // STK của bạn
+
+        String content = currentUser.getRechargeCode();
+
+        String qrUrl = "https://img.vietqr.io/image/"
+                + bank + "-" + account + "-qr_only.png?addInfo=" + content;
+
+        // ========================
+        // ĐẨY RA VIEW
+        // ========================
         model.addAttribute("user", currentUser);
         model.addAttribute("currentUser", currentUser);
+        model.addAttribute("qrUrl", qrUrl);
 
-        // Kéo lịch sử các phiếu nạp tiền
         model.addAttribute("rechargeHistory", rechargeService.getUserRequests(principal.getName()));
 
         return "customer/recharge";
