@@ -83,12 +83,33 @@ public class AdminUserController {
                              @RequestParam String email,
                              @RequestParam Role role,
                              @RequestParam(required = false) String password,
+                             @RequestParam(required = false) BigDecimal balanceAmount,
+                             @RequestParam(required = false) String balanceAction,
+
                              RedirectAttributes redirectAttributes) {
         try {
             User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng."));
 
             user.setEmail(email);
-            user.setRole(role); // Set lại Role theo Admin chọn
+            user.setRole(role);
+            // ✅ XỬ LÝ BALANCE
+            if (balanceAmount != null && balanceAction != null && balanceAmount.compareTo(BigDecimal.ZERO) > 0) {
+
+                BigDecimal current = user.getBalance();
+
+                if (balanceAction.equals("add")) {
+                    user.setBalance(current.add(balanceAmount));
+                } else if (balanceAction.equals("subtract")) {
+                    user.setBalance(current.subtract(balanceAmount));
+                } else if (balanceAction.equals("set")) {
+                    user.setBalance(balanceAmount);
+                }
+
+                // Không cho âm
+                if (user.getBalance().compareTo(BigDecimal.ZERO) < 0) {
+                    user.setBalance(BigDecimal.ZERO);
+                }
+            }
 
             // Nếu Admin có nhập mật khẩu mới thì mới đổi, không thì giữ nguyên mật khẩu cũ
             if (password != null && !password.trim().isEmpty()) {
@@ -149,6 +170,36 @@ public class AdminUserController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
         }
+        return "redirect:/admin/users";
+    }
+
+
+    // so du
+    @PostMapping("/admin/users/update-balance")
+    public String updateBalance(@RequestParam Long userId,
+                                @RequestParam String action,
+                                @RequestParam BigDecimal amount) {
+
+        userRepository.findById(userId).ifPresent(user -> {
+
+            BigDecimal current = user.getBalance();
+
+            if (action.equals("add")) {
+                user.setBalance(current.add(amount));
+            } else if (action.equals("subtract")) {
+                user.setBalance(current.subtract(amount));
+            } else if (action.equals("set")) {
+                user.setBalance(amount);
+            }
+
+            // ❗ tránh âm tiền
+            if (user.getBalance().compareTo(BigDecimal.ZERO) < 0) {
+                user.setBalance(BigDecimal.ZERO);
+            }
+
+            userRepository.save(user);
+        });
+
         return "redirect:/admin/users";
     }
 }

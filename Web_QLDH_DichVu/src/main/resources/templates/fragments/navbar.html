@@ -56,7 +56,17 @@
                     <div class="dropdown">
                         <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle text-primary" style="font-size: 1.8rem;"></i>
-                            <span class="ms-2 fw-bold text-dark" th:text="${username}">User</span>
+
+                            <div class="ms-2 d-flex flex-column">
+                                <span class="fw-bold text-dark" th:text="${username}">User</span>
+
+                                <!-- BALANCE -->
+                                <small style="color: #28a745; font-weight: 600;">
+                                    Số dư:
+                                    <span th:text="${#numbers.formatDecimal(balance, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                    VND
+                                </small>
+                            </div>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3" style="border-radius: 12px; min-width: 220px;">
                             <li><div class="dropdown-header fw-bold text-dark" th:text="${username}">User</div></li>

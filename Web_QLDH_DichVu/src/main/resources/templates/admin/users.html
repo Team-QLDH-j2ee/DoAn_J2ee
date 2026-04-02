@@ -158,6 +158,17 @@
                                                     <label class="form-label fw-bold text-danger">Đổi Mật Khẩu Mới</label>
                                                     <input type="password" name="password" class="form-control" placeholder="Bỏ trống nếu không muốn đổi mật khẩu">
                                                 </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold text-success">Chỉnh Sửa Số Dư</label>
+
+                                                    <input type="number" name="balanceAmount" class="form-control mb-2" placeholder="Nhập số tiền (VD: 100000)" />
+
+                                                    <div class="d-flex gap-2">
+                                                        <button type="submit" name="balanceAction" value="add" class="btn btn-success btn-sm">+ Cộng</button>
+                                                        <button type="submit" name="balanceAction" value="subtract" class="btn btn-warning btn-sm">- Trừ</button>
+                                                        <button type="submit" name="balanceAction" value="set" class="btn btn-danger btn-sm">Set</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="modal-footer bg-light">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>

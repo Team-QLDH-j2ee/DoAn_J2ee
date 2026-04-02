@@ -16,26 +16,31 @@ public class GlobalControllerAdvice {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepo;
 
-    // Hàm này sẽ chạy ngầm trước TẤT CẢ các trang để bơm dữ liệu cho Navbar
     @ModelAttribute
     public void addGlobalAttributes(Model model, Principal principal) {
         if (principal != null) {
-            // Đã đăng nhập: Bơm username và cờ isLoggedIn = true
+
             String username = principal.getName();
             model.addAttribute("username", username);
             model.addAttribute("isLoggedIn", true);
 
             userRepository.findByUsername(username).ifPresent(user -> {
-                // Nếu là Khách hàng thì đếm thêm số thông báo chưa đọc
+
+                // ✅ THÊM DÒNG NÀY
+                model.addAttribute("currentUser", user);
+                model.addAttribute("balance", user.getBalance());
+
+                // Nếu là khách hàng → đếm thông báo
                 if (user.getRole().name().equals("CUSTOMER")) {
                     long unreadCount = notificationRepo.findAll().stream()
                             .filter(n -> n.getUser().getId().equals(user.getId()) && !n.isRead())
                             .count();
+
                     model.addAttribute("unreadNotifCount", unreadCount);
                 }
             });
+
         } else {
-            // Chưa đăng nhập: Cờ isLoggedIn = false để hiện nút Đăng nhập/Đăng ký
             model.addAttribute("isLoggedIn", false);
         }
     }
