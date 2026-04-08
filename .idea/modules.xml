@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/DoAn_j2ee.iml" filepath="$PROJECT_DIR$/.idea/DoAn_j2ee.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Web_QLDH_DichVu/Web_QLDH_DichVu.iml" filepath="$PROJECT_DIR$/Web_QLDH_DichVu/Web_QLDH_DichVu.iml" />
     </modules>
   </component>
 </project>
