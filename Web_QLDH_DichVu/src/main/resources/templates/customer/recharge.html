@@ -144,8 +144,8 @@
                             <tr th:if="${#lists.isEmpty(rechargeHistory)}">
                                 <td colspan="4" class="text-center py-4 text-muted">Bạn chưa có lịch sử nạp tiền nào.</td>
                             </tr>
-                            <tr th:each="req : ${rechargeHistory}">
-                                <td class="ps-4 fw-bold text-muted" th:text="'#' + ${req.id}"></td>
+                            <tr th:each="req, stat : ${rechargeHistory}">
+                                <td class="ps-4 fw-bold text-muted" th:text="'#' + ${stat.count}"></td>
                                 <td th:text="${#temporals.format(req.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td class="fw-bold text-success" th:text="'+' + ${#numbers.formatDecimal(req.amount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
                                 <td>

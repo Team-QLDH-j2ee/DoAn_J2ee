@@ -20,24 +20,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/sepay/webhook")
+                )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/sepay/webhook").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/", "/login", "/register", "/css/**", "/js/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        // MỚI: Xử lý bẻ lái URL sau khi đăng nhập thành công
                         .successHandler((request, response, authentication) -> {
-                            // Kiểm tra xem User này có quyền ADMIN không
                             boolean isAdmin = authentication.getAuthorities().stream()
                                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
                             if (isAdmin) {
-                                // Nếu là Admin -> Phi thẳng vào Dashboard
                                 response.sendRedirect("/admin/dashboard");
                             } else {
-                                // Nếu là Khách -> Ra trang chủ
                                 response.sendRedirect("/");
                             }
                         })
