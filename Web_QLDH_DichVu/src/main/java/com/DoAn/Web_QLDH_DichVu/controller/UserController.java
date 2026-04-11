@@ -4,6 +4,7 @@ import com.DoAn.Web_QLDH_DichVu.entity.User;
 import com.DoAn.Web_QLDH_DichVu.repository.UserRepository;
 import com.DoAn.Web_QLDH_DichVu.service.RechargeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,9 @@ public class UserController {
 
     @Autowired
     private RechargeService rechargeService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // KHO THÔNG BÁO BẮT BUỘC PHẢI CÓ
     @Autowired
@@ -67,6 +71,45 @@ public class UserController {
             ra.addFlashAttribute("success", "Cập nhật thông tin thành công!");
         }
 
+        return "redirect:/user/profile";
+    }
+
+    // 3.1. Hiển thị form đổi mật khẩu
+    @GetMapping("/change-password")
+    public String viewChangePassword(Model model, Principal principal) {
+        if (principal == null) return "redirect:/login";
+
+        User currentUser = userRepository.findByUsername(principal.getName()).orElse(null);
+        model.addAttribute("user", currentUser);
+
+        return "customer/change-password";
+    }
+
+    // 3.2. Xử lý đổi mật khẩu
+    @PostMapping("/change-password")
+    public String changePassword(@RequestParam("oldPassword") String oldPassword,
+                                 @RequestParam("newPassword") String newPassword,
+                                 @RequestParam("confirmPassword") String confirmPassword,
+                                 Principal principal, RedirectAttributes ra) {
+        if (principal == null) return "redirect:/login";
+
+        User user = userRepository.findByUsername(principal.getName()).orElse(null);
+        if (user == null) return "redirect:/login";
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            ra.addFlashAttribute("error", "Mật khẩu cũ không chính xác!");
+            return "redirect:/user/change-password";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            ra.addFlashAttribute("error", "Mật khẩu xác nhận không khớp!");
+            return "redirect:/user/change-password";
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        ra.addFlashAttribute("success", "Đổi mật khẩu thành công! Bạn có thể sử dụng mật khẩu mới ở lần đăng nhập sau.");
         return "redirect:/user/profile";
     }
 

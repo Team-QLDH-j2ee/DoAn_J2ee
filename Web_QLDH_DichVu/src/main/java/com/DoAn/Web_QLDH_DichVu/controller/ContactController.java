@@ -4,6 +4,7 @@ import com.DoAn.Web_QLDH_DichVu.entity.ContactMessage;
 import com.DoAn.Web_QLDH_DichVu.entity.User;
 import com.DoAn.Web_QLDH_DichVu.repository.ContactMessageRepository;
 import com.DoAn.Web_QLDH_DichVu.repository.UserRepository;
+import com.DoAn.Web_QLDH_DichVu.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,7 @@ public class ContactController {
 
     private final ContactMessageRepository contactRepo;
     private final UserRepository userRepo;
+    private final EmailService emailService;
 
     @GetMapping("/contact")
     public String showContactPage(Model model, Principal principal) {
@@ -55,7 +57,11 @@ public class ContactController {
                     .build();
 
             contactRepo.save(contactMsg);
-            redirectAttributes.addFlashAttribute("successMessage", "Tin nhắn đã được gửi! Quản trị viên sẽ sớm liên hệ lại với bạn.");
+            
+            // Gửi email xác nhận (Chạy ngầm @Async)
+            emailService.sendContactConfirmationEmail(email, name);
+            
+            redirectAttributes.addFlashAttribute("successMessage", "Hệ thống đã ghi nhận liên hệ và sẽ phản hồi qua mail hoặc số điện thoại. Vui lòng kiểm tra hộp thư của bạn.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra, vui lòng thử lại sau.");
         }
