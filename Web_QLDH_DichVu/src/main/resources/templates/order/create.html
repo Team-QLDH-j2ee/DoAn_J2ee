@@ -97,7 +97,7 @@
 
     // Hàm Lọc Dịch Vụ Theo Nền Tảng
     function filterServices() {
-      const selectedPlatform = platformSelect.value;
+      const selectedPlatform = platformSelect.value.toUpperCase().trim();
 
       // Đổi Header title cho ngầu
       headerTitle.innerText = "HỆ THỐNG TĂNG TƯƠNG TÁC " + selectedPlatform;
@@ -106,7 +106,8 @@
       let hasVisibleOption = false;
       for (let i = 1; i < serviceSelect.options.length; i++) { // Bỏ qua option đầu tiên (Vui lòng chọn...)
         const option = serviceSelect.options[i];
-        if (option.getAttribute('data-platform') === selectedPlatform) {
+        const optPlatform = (option.getAttribute('data-platform') || '').toUpperCase().trim();
+        if (optPlatform === selectedPlatform) {
           option.hidden = false;
           option.disabled = false;
           hasVisibleOption = true;

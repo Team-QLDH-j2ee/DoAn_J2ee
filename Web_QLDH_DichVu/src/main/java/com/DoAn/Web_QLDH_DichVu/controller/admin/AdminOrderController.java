@@ -1,4 +1,4 @@
-package com.DoAn.Web_QLDH_DichVu.controller;
+package com.DoAn.Web_QLDH_DichVu.controller.admin;
 
 import com.DoAn.Web_QLDH_DichVu.enums.OrderStatus;
 import com.DoAn.Web_QLDH_DichVu.repository.BuffOrderRepository;
@@ -20,19 +20,17 @@ public class AdminOrderController {
 
     private final BuffOrderService orderService;
 
-    // SẾP THÊM ĐÚNG DÒNG NÀY VÀO LÀ HẾT BÁO ĐỎ NHÉ 👇
     private final BuffOrderRepository orderRepository;
 
-    // 1. Hiển thị danh sách toàn bộ đơn hàng
     @GetMapping
     public String manageOrders(
             @RequestParam(value = "page", defaultValue = "1") int page,
             Model model) {
 
-        int pageSize = 10; // 10 đơn 1 trang
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        int pageSize = 10;
+        Pageable pageable = PageRequest.of(page - 1, pageSize,
+                Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        // Lúc này orderRepository đã có mặt để phục vụ sếp!
         Page<com.DoAn.Web_QLDH_DichVu.entity.BuffOrder> pageData = orderRepository.findAll(pageable);
 
         model.addAttribute("orders", pageData.getContent());
@@ -42,14 +40,14 @@ public class AdminOrderController {
         return "admin/orders";
     }
 
-    // 2. Xử lý khi Admin đổi trạng thái đơn hàng
     @PostMapping("/update-status/{id}")
     public String updateOrderStatus(@PathVariable Long id,
-                                    @RequestParam OrderStatus status,
-                                    RedirectAttributes redirectAttributes) {
+            @RequestParam OrderStatus status,
+            RedirectAttributes redirectAttributes) {
         try {
             orderService.updateOrderStatusByAdmin(id, status);
-            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái đơn #" + id + " thành công!");
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Cập nhật trạng thái đơn #" + id + " thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
         }

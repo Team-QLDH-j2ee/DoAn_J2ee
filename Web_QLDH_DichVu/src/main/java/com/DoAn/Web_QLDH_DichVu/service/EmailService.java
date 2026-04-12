@@ -25,4 +25,19 @@ public class EmailService {
         
         mailSender.send(message);
     }
+
+    @Async
+    public void sendPasswordResetEmail(String toEmail, String resetLink) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("Đặt lại mật khẩu - SMM Panel");
+        message.setText("Xin chào,\n\n"
+                + "Bạn đã yêu cầu đặt lại mật khẩu của mình. Vui lòng nhấp vào liên kết dưới đây để tạo mật khẩu mới:\n\n"
+                + resetLink + "\n\n"
+                + "Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.\n\n"
+                + "Trân trọng,\n"
+                + "Đội ngũ hỗ trợ SMM Panel.");
+        
+        mailSender.send(message);
+    }
 }

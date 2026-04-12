@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Từ chối truy cập - SMM Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <th:block th:replace="~{fragments/navbar :: nav-styles}"></th:block>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <nav th:replace="~{fragments/navbar :: customer-nav}"></nav>
+
+    <div class="container mt-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+        <div class="text-center p-5 shadow bg-white rounded" style="max-width: 600px; width: 100%;">
+            <i class="bi bi-shield-lock text-danger" style="font-size: 5rem;"></i>
+            <h1 class="mt-3 fw-bold text-dark">403</h1>
+            <h2 class="fw-bold text-secondary">Truy cập bị từ chối</h2>
+            <p class="text-muted fs-5 mt-3">Xin lỗi, bạn không có quyền truy cập vào khu vực này.</p>
+            <div class="mt-4">
+                <a th:href="@{/}" class="btn btn-primary fw-bold px-4 py-2 shadow-sm rounded-pill">
+                    <i class="bi bi-house-door me-2"></i> Trở về Trang chủ
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-auto py-3 bg-light border-top">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                © COPYRIGHT SMM PANEL - ALL RIGHTS RESERVED.
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="status-dot"></span>
+                <span class="me-3 fw-bold" style="color: var(--brand-secondary)">STATE</span>
+                <i class="bi bi-globe me-2 fs-5"></i>
+                <i class="bi bi-question-circle fs-5"></i>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

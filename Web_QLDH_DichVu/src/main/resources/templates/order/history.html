@@ -62,57 +62,11 @@
                         </td>
 
                         <td class="text-end pe-4 text-nowrap">
-                            <div th:if="${order.status.name() == 'PENDING'}">
-
-                                <form th:action="@{/order/pay/{id}(id=${order.id})}" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-success shadow-sm" title="Thanh Toán">
-                                        <i class="bi bi-wallet2"></i>
-                                    </button>
-                                </form>
-
-                                <button type="button" class="btn btn-sm btn-primary shadow-sm mx-1" data-bs-toggle="modal" th:data-bs-target="'#editOrderModal' + ${order.id}" title="Sửa Đơn">
-                                    <i class="bi bi-pencil-square"></i>
+                            <form th:if="${order.status.name() == 'PENDING'}" th:action="@{/order/pay/{id}(id=${order.id})}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-success shadow-sm" title="Thanh Toán">
+                                    <i class="bi bi-wallet2"></i>
                                 </button>
-
-                                <form th:action="@{/order/cancel/{id}(id=${order.id})}" method="post" class="d-inline"
-                                      onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
-                                    <button type="submit" class="btn btn-sm btn-danger shadow-sm" title="Hủy Đơn">
-                                        <i class="bi bi-x-circle"></i>
-                                    </button>
-                                </form>
-
-                                <div class="modal fade" th:id="'editOrderModal' + ${order.id}" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content text-start border-0 shadow">
-                                            <form th:action="@{/order/edit/{id}(id=${order.id})}" method="post">
-                                                <div class="modal-header bg-primary text-white">
-                                                    <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Sửa Đơn Hàng #<span th:text="${order.id}"></span></h5>
-                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body p-4">
-                                                    <div class="alert alert-info py-2">
-                                                        Hệ thống sẽ tự động tính lại tổng tiền dựa trên số lượng mới.
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label fw-bold">Link Tương Tác Mới</label>
-                                                        <input type="url" name="targetLink" class="form-control" th:value="${order.targetLink}" required>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label fw-bold">Số Lượng Cần Tăng</label>
-                                                        <input type="number" name="quantity" class="form-control" th:value="${order.quantity}" min="100" required>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer bg-light">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                                    <button type="submit" class="btn btn-primary fw-bold">Lưu Thay Đổi</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <span th:if="${order.status.name() != 'PENDING'}" class="text-muted fst-italic"><i class="bi bi-lock-fill"></i> Đã khóa</span>
+                            </form>
                         </td>
                     </tr>
                     </tbody>

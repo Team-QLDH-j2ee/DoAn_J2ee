@@ -21,14 +21,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/sepay/webhook")
-                )
+                        .ignoringRequestMatchers("/api/sepay/webhook"))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/sepay/webhook").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .requestMatchers("/user/**", "/order/**", "/contact/**").hasRole("CUSTOMER")
+                        .requestMatchers("/", "/login", "/register", "/forgot-password", "/reset-password", "/contact", "/contact/send", "/css/**", "/js/**",
+                                "/images/**", "/access-denied")
+                        .permitAll()
+                        .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler((request, response, authentication) -> {
@@ -41,12 +42,12 @@ public class SecurityConfig {
                                 response.sendRedirect("/");
                             }
                         })
-                        .permitAll()
-                )
+                        .permitAll())
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout")
-                        .permitAll()
-                );
+                        .permitAll())
+                .exceptionHandling(ex -> ex
+                        .accessDeniedPage("/access-denied"));
 
         return http.build();
     }

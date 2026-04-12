@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,127 +20,137 @@
     <head th:replace="~{fragments/navbar :: nav-styles}"></head>
 
 </head>
+
 <body>
 
 
 
-<nav th:replace="~{fragments/navbar :: customer-nav}"></nav>
+    <nav th:replace="~{fragments/navbar :: customer-nav}"></nav>
 
-<div class="alert-bar">
-    <div class="container d-flex align-items-center">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        <span th:text="${welcomeMessage}">Hệ thống Online: Database kết nối thành công. Template hoạt động tốt.</span>
+    <div class="alert-bar">
+        <div class="container d-flex align-items-center">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${welcomeMessage}">Hệ thống Online: Database kết nối thành công. Template hoạt động
+                tốt.</span>
+        </div>
     </div>
-</div>
 
-<section class="hero-section">
-    <div class="container">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-6 pe-lg-5">
-                <h1 class="hero-title mb-4">
-                    Nâng Tầm <span class="text-primary-custom">Mạng<br>Xã Hội</span> Của Bạn
-                </h1>
-                <p class="hero-subtitle">
-                    Hệ thống SMM Panel hàng đầu Việt Nam: Tăng Like, Follow, View uy tín & giá rẻ. Tự động hóa hoàn toàn, hỗ trợ 24/7.
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6 pe-lg-5">
+                    <h1 class="hero-title mb-4">
+                        Nâng Tầm <span class="text-primary-custom">Mạng<br>Xã Hội</span> Của Bạn
+                    </h1>
+                    <p class="hero-subtitle">
+                        Hệ thống SMM Panel hàng đầu Việt Nam: Tăng Like, Follow, View uy tín & giá rẻ. Tự động hóa hoàn
+                        toàn, hỗ trợ 24/7.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a th:href="${isLoggedIn ? '/order/create' : '/login'}"
+                            class="btn btn-custom-solid btn-hero">Bắt Đầu Ngay</a>
+                        <a href="#services" class="btn btn-light-gray btn-hero">Xem Bảng Giá</a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <img src="https://voca-land.sgp1.cdn.digitaloceanspaces.com/0/1757652586142/3449a8e0.jpg"
+                        alt="SMM Panel Growth" class="hero-img">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="services-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold fs-1 mb-3">Dịch Vụ Phổ Biến</h2>
+                <p class="text-neutral mx-auto" style="max-width: 600px;">
+                    Chúng tôi cung cấp giải pháp tối ưu cho mọi nền tảng mạng xã hội với chi phí cạnh tranh nhất thị
+                    trường.
                 </p>
-                <div class="d-flex gap-3">
-                    <a th:href="${isLoggedIn ? '/order/create' : '/login'}" class="btn btn-custom-solid btn-hero">Bắt Đầu Ngay</a>
-                    <a href="#services" class="btn btn-light-gray btn-hero">Xem Bảng Giá</a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="service-card d-flex flex-column shadow-sm h-100">
+                        <div class="icon-wrapper"><i class="bi bi-camera"></i></div>
+                        <h5 class="fw-bold mb-3">Instagram</h5>
+                        <p class="text-neutral fs-6 mb-4">Tăng lượng người theo dõi thật, ổn định và nhanh chóng cho
+                            trang cá nhân hoặc doanh nghiệp.</p>
+                        <a th:href="@{/order/create(platform='INSTAGRAM')}"
+                            class="text-decoration-none mt-auto d-flex justify-content-between align-items-center">
+                            <i class="bi bi-arrow-right text-primary-custom fs-5"></i>
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-6">
-                <img src="data:image/jpeg;base64,/9j/4AAQ..." alt="SMM Panel Growth" class="hero-img">
-            </div>
-        </div>
-    </div>
-</section>
 
-<section id="services" class="services-section">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold fs-1 mb-3">Dịch Vụ Phổ Biến</h2>
-            <p class="text-neutral mx-auto" style="max-width: 600px;">
-                Chúng tôi cung cấp giải pháp tối ưu cho mọi nền tảng mạng xã hội với chi phí cạnh tranh nhất thị trường.
-            </p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="service-card d-flex flex-column shadow-sm h-100">
-                    <div class="icon-wrapper"><i class="bi bi-camera"></i></div>
-                    <h5 class="fw-bold mb-3">Tăng Follower Instagram</h5>
-                    <p class="text-neutral fs-6 mb-4">Tăng lượng người theo dõi thật, ổn định và nhanh chóng cho trang cá nhân hoặc doanh nghiệp.</p>
-                    <a th:href="@{/order/create(platform='INSTAGRAM')}" class="text-decoration-none mt-auto d-flex justify-content-between align-items-center">
-                        <span class="card-price text-dark">Từ 10.000đ</span>
-                        <i class="bi bi-arrow-right text-primary-custom fs-5"></i>
-                    </a>
+                <div class="col-md-4">
+                    <div class="service-card d-flex flex-column shadow-sm h-100">
+                        <div class="icon-wrapper"><i class="bi bi-hand-thumbs-up-fill"></i></div>
+                        <h5 class="fw-bold mb-3">Facebook</h5>
+                        <p class="text-neutral fs-6 mb-4">Tăng tương tác cho bài viết, fanpage với chi phí cực thấp và
+                            độ bảo mật tuyệt đối.</p>
+                        <a th:href="@{/order/create(platform='FACEBOOK')}"
+                            class="text-decoration-none mt-auto d-flex justify-content-between align-items-center">
+                            <i class="bi bi-arrow-right text-primary-custom fs-5"></i>
+                        </a>
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="service-card d-flex flex-column shadow-sm h-100">
-                    <div class="icon-wrapper"><i class="bi bi-hand-thumbs-up-fill"></i></div>
-                    <h5 class="fw-bold mb-3">Tăng Like Facebook</h5>
-                    <p class="text-neutral fs-6 mb-4">Tăng tương tác cho bài viết, fanpage với chi phí cực thấp và độ bảo mật tuyệt đối.</p>
-                    <a th:href="@{/order/create(platform='FACEBOOK')}" class="text-decoration-none mt-auto d-flex justify-content-between align-items-center">
-                        <span class="card-price text-dark">Từ 5.000đ</span>
-                        <i class="bi bi-arrow-right text-primary-custom fs-5"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="service-card d-flex flex-column shadow-sm h-100">
-                    <div class="icon-wrapper"><i class="bi bi-camera-video-fill"></i></div>
-                    <h5 class="fw-bold mb-3">Tăng View TikTok</h5>
-                    <p class="text-neutral fs-6 mb-4">Đẩy video lên xu hướng với hàng triệu lượt xem trong thời gian ngắn nhất có thể.</p>
-                    <a th:href="@{/order/create(platform='TIKTOK')}" class="text-decoration-none mt-auto d-flex justify-content-between align-items-center">
-                        <span class="card-price text-dark">Từ 2.000đ</span>
-                        <i class="bi bi-arrow-right text-primary-custom fs-5"></i>
-                    </a>
+                <div class="col-md-4">
+                    <div class="service-card d-flex flex-column shadow-sm h-100">
+                        <div class="icon-wrapper"><i class="bi bi-camera-video-fill"></i></div>
+                        <h5 class="fw-bold mb-3">TikTok</h5>
+                        <p class="text-neutral fs-6 mb-4">Đẩy video lên xu hướng với hàng triệu lượt xem trong thời gian
+                            ngắn nhất có thể.</p>
+                        <a th:href="@{/order/create(platform='TIKTOK')}"
+                            class="text-decoration-none mt-auto d-flex justify-content-between align-items-center">
+                            <i class="bi bi-arrow-right text-primary-custom fs-5"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<section class="stats-section">
-    <div class="container">
-        <div class="row text-center g-4">
-            <div class="col-6 col-md-3">
-                <div class="stat-number">500k+</div>
-                <div class="stat-label">ĐƠN HÀNG</div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="stat-number">10k+</div>
-                <div class="stat-label">KHÁCH HÀNG</div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="stat-number">24/7</div>
-                <div class="stat-label">HỖ TRỢ</div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="stat-number">100%</div>
-                <div class="stat-label">BẢO MẬT</div>
+    <section class="stats-section">
+        <div class="container">
+            <div class="row text-center g-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-number">500k+</div>
+                    <div class="stat-label">ĐƠN HÀNG</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-number">10k+</div>
+                    <div class="stat-label">KHÁCH HÀNG</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">HỖ TRỢ</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">BẢO MẬT</div>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<footer>
-    <div class="container d-flex justify-content-between align-items-center">
-        <div>
-            © COPYRIGHT SMM PANEL - ALL RIGHTS RESERVED.
+    <footer>
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                © COPYRIGHT SMM PANEL - ALL RIGHTS RESERVED.
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="status-dot"></span>
+                <span class="me-3 fw-bold" style="color: var(--brand-secondary)">STATE</span>
+                <i class="bi bi-globe me-2 fs-5"></i>
+                <i class="bi bi-question-circle fs-5"></i>
+            </div>
         </div>
-        <div class="d-flex align-items-center">
-            <span class="status-dot"></span>
-            <span class="me-3 fw-bold" style="color: var(--brand-secondary)">STATE</span>
-            <i class="bi bi-globe me-2 fs-5"></i>
-            <i class="bi bi-question-circle fs-5"></i>
-        </div>
-    </div>
-</footer>
+    </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

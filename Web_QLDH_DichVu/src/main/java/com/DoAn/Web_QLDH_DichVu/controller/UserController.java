@@ -37,7 +37,8 @@ public class UserController {
     // 1. Xem thông tin cá nhân
     @GetMapping("/profile")
     public String viewProfile(Model model, Principal principal) {
-        if (principal == null) return "redirect:/login";
+        if (principal == null)
+            return "redirect:/login";
 
         User currentUser = userRepository.findByUsername(principal.getName()).orElse(null);
         model.addAttribute("user", currentUser);
@@ -48,7 +49,8 @@ public class UserController {
     // 2. Hiển thị trang chỉnh sửa
     @GetMapping("/edit")
     public String editProfile(Model model, Principal principal) {
-        if (principal == null) return "redirect:/login";
+        if (principal == null)
+            return "redirect:/login";
 
         User currentUser = userRepository.findByUsername(principal.getName()).orElse(null);
         model.addAttribute("user", currentUser);
@@ -59,7 +61,8 @@ public class UserController {
     // 3. Xử lý lưu thông tin chỉnh sửa
     @PostMapping("/update")
     public String updateProfile(@ModelAttribute("user") User userDetails, Principal principal, RedirectAttributes ra) {
-        if (principal == null) return "redirect:/login";
+        if (principal == null)
+            return "redirect:/login";
 
         User user = userRepository.findByUsername(principal.getName()).orElse(null);
 
@@ -77,7 +80,8 @@ public class UserController {
     // 3.1. Hiển thị form đổi mật khẩu
     @GetMapping("/change-password")
     public String viewChangePassword(Model model, Principal principal) {
-        if (principal == null) return "redirect:/login";
+        if (principal == null)
+            return "redirect:/login";
 
         User currentUser = userRepository.findByUsername(principal.getName()).orElse(null);
         model.addAttribute("user", currentUser);
@@ -88,13 +92,15 @@ public class UserController {
     // 3.2. Xử lý đổi mật khẩu
     @PostMapping("/change-password")
     public String changePassword(@RequestParam("oldPassword") String oldPassword,
-                                 @RequestParam("newPassword") String newPassword,
-                                 @RequestParam("confirmPassword") String confirmPassword,
-                                 Principal principal, RedirectAttributes ra) {
-        if (principal == null) return "redirect:/login";
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword,
+            Principal principal, RedirectAttributes ra) {
+        if (principal == null)
+            return "redirect:/login";
 
         User user = userRepository.findByUsername(principal.getName()).orElse(null);
-        if (user == null) return "redirect:/login";
+        if (user == null)
+            return "redirect:/login";
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             ra.addFlashAttribute("error", "Mật khẩu cũ không chính xác!");
@@ -109,14 +115,16 @@ public class UserController {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
-        ra.addFlashAttribute("success", "Đổi mật khẩu thành công! Bạn có thể sử dụng mật khẩu mới ở lần đăng nhập sau.");
+        ra.addFlashAttribute("success",
+                "Đổi mật khẩu thành công! Bạn có thể sử dụng mật khẩu mới ở lần đăng nhập sau.");
         return "redirect:/user/profile";
     }
 
     // 4. Trang nạp tiền
     @GetMapping("/recharge")
     public String viewRecharge(Model model, Principal principal) {
-        if (principal == null) return "redirect:/login";
+        if (principal == null)
+            return "redirect:/login";
 
         User currentUser = userRepository.findByUsername(principal.getName()).orElse(null);
 
@@ -145,12 +153,16 @@ public class UserController {
 
     // 5. Xử lý Tạo Phiếu Nạp
     @PostMapping("/recharge/create")
-    public String createRechargeRequest(@RequestParam BigDecimal amount, Principal principal, RedirectAttributes redirectAttributes) {
-        if (principal == null) return "redirect:/login";
+    public String createRechargeRequest(@RequestParam BigDecimal amount, Principal principal,
+            RedirectAttributes redirectAttributes) {
+        if (principal == null)
+            return "redirect:/login";
 
         try {
             rechargeService.createRequest(principal.getName(), amount);
-            redirectAttributes.addFlashAttribute("successMessage", "Tạo yêu cầu nạp " + String.format("%,d", amount.longValue()) + " VNĐ thành công! Vui lòng chuyển khoản theo hướng dẫn bên dưới.");
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Tạo yêu cầu nạp " + String.format("%,d", amount.longValue())
+                            + " VNĐ thành công! Vui lòng chuyển khoản theo hướng dẫn bên dưới.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
         }
@@ -165,7 +177,8 @@ public class UserController {
     // 6. Mở trang Danh sách Thông Báo (CHỨC NĂNG MỚI)
     @GetMapping("/notifications")
     public String viewNotifications(Model model, Principal principal) {
-        if (principal == null) return "redirect:/login";
+        if (principal == null)
+            return "redirect:/login";
 
         userRepository.findByUsername(principal.getName()).ifPresent(user -> {
             // Lấy tất cả thông báo của user, xếp mới nhất lên đầu
@@ -188,7 +201,8 @@ public class UserController {
         if (principal != null) {
             userRepository.findByUsername(principal.getName()).ifPresent(user -> {
                 // Chỉ lấy những tin chưa đọc (isRead = false) để update
-                java.util.List<com.DoAn.Web_QLDH_DichVu.entity.Notification> unreadNotifs = notificationRepo.findAll().stream()
+                java.util.List<com.DoAn.Web_QLDH_DichVu.entity.Notification> unreadNotifs = notificationRepo.findAll()
+                        .stream()
                         .filter(n -> n.getUser().getId().equals(user.getId()) && !n.isRead())
                         .toList();
 

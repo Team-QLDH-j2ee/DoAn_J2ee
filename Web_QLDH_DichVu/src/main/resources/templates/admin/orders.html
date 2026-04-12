@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Admin - Quản Lý Đơn Hàng</title>
@@ -50,7 +51,7 @@
             </ul>
             <div class="d-flex align-items-center text-white border-start border-secondary ps-3 ms-3">
                 <i class="bi bi-person-circle fs-4 text-info me-2"></i>
-                <span class="me-3">Chào Chủ Tịch, <b class="text-warning">Sơn Đại Ka</b></span>
+                <span class="me-3">Chào Chủ Tịch, <b class="text-warning" sec:authentication="name">Admin</b></span>
                 <form th:action="@{/logout}" method="post" class="m-0">
                     <button type="submit" class="btn btn-sm btn-danger fw-bold shadow-sm">
                         <i class="bi bi-power me-1"></i>Đăng xuất
@@ -76,7 +77,7 @@
 <div class="container-fluid px-4 pb-5">
     <div class="card shadow-sm card-custom">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center" style="border-radius: 15px 15px 0 0; border-bottom: 2px solid #f8f9fa;">
-            <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-cart-check text-primary me-2"></i>Toàn Bộ Đơn Hàng Hệ Thống</h5>
+            <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-cart-check text-primary me-2"></i>Quản Lý Đơn Hàng</h5>
         </div>
 
         <div class="card-body p-0">
@@ -91,69 +92,62 @@
                     <tr>
                         <th class="ps-4">Mã Đơn</th>
                         <th>Khách Hàng</th>
-                        <th>Link Tương Tác</th>
-                        <th>Bắt đầu</th>
-                        <th>Cần tăng</th>
-                        <th>Tổng Tiền</th>
-                        <th>Cập Nhật Trạng Thái</th>
+                        <th>Link / Mục Tiêu</th>
+                        <th>Số Lượng</th>
+                        <th>Tổng Giá</th>
+                        <th>Ngày Tạo</th>
+                        <th>Trạng Thái</th>
+                        <th class="text-end pe-4">Thao Tác</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:if="${#lists.isEmpty(orders)}">
-                        <td colspan="7" class="text-center py-5 text-muted">
-                            <i class="bi bi-inbox fs-1 d-block mb-3"></i>
-                            Chưa có đơn hàng nào trong hệ thống.
-                        </td>
-                    </tr>
                     <tr th:each="order : ${orders}">
                         <td class="ps-4 fw-bold text-muted" th:text="'#' + ${order.id}"></td>
-
-                        <td><span class="badge bg-secondary" th:text="${order.user.username}"></span></td>
-
+                        <td class="fw-bold text-dark" th:text="${order.user.username}"></td>
+                        <td th:text="${order.targetLink}"></td>
+                        <td th:text="${order.quantity}"></td>
+                        <td class="fw-bold text-success" th:text="${#numbers.formatDecimal(order.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+                        <td th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
                         <td>
-                            <a th:href="${order.targetLink}" target="_blank" class="text-truncate d-inline-block text-decoration-none" style="max-width: 150px;" th:text="${order.targetLink}"></a>
+                            <span th:if="${order.status.name() == 'PENDING'}" class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Chờ xử lý</span>
+                            <span th:if="${order.status.name() == 'IN_PROGRESS'}" class="badge bg-primary"><i class="bi bi-gear-fill"></i> Đang chạy</span>
+                            <span th:if="${order.status.name() == 'COMPLETED'}" class="badge bg-success"><i class="bi bi-check-circle"></i> Hoàn thành</span>
+                            <span th:if="${order.status.name() == 'CANCELLED'}" class="badge bg-danger"><i class="bi bi-x-circle"></i> Đã hủy</span>
                         </td>
-
-                        <td th:text="${order.initialCount}"></td>
-                        <td class="fw-bold" th:text="${order.quantity}"></td>
-                        <td class="fw-bold text-danger" th:text="${#numbers.formatDecimal(order.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"></td>
-
-                        <td class="pe-4" style="min-width: 250px;">
-                            <form th:action="@{/admin/orders/update-status/{id}(id=${order.id})}" method="post" class="d-flex align-items-center gap-2">
-                                <select name="status" class="form-select form-select-sm fw-bold"
-                                        th:classappend="${order.status.name() == 'COMPLETED' ? 'border-success text-success' : (order.status.name() == 'PENDING' ? 'border-warning text-warning' : '')}">
-                                    <option value="PENDING" th:selected="${order.status.name() == 'PENDING'}">Chờ Thanh Toán</option>
-                                    <option value="IN_PROGRESS" th:selected="${order.status.name() == 'IN_PROGRESS'}">Đang Chạy</option>
-                                    <option value="COMPLETED" th:selected="${order.status.name() == 'COMPLETED'}">Hoàn Thành</option>
-                                    <option value="CANCELLED" th:selected="${order.status.name() == 'CANCELLED'}">Đã Hủy</option>
+                        <td class="text-end pe-4 text-nowrap">
+                            <form th:action="@{/admin/orders/update-status/{id}(id=${order.id})}" method="post" class="d-inline-block">
+                                <select name="status" class="form-select form-select-sm d-inline-block w-auto shadow-sm me-2" onchange="this.form.submit()">
+                                    <option value="PENDING" th:selected="${order.status.name() == 'PENDING'}">Chờ xử lý</option>
+                                    <option value="IN_PROGRESS" th:selected="${order.status.name() == 'IN_PROGRESS'}">Đang chạy</option>
+                                    <option value="COMPLETED" th:selected="${order.status.name() == 'COMPLETED'}">Hoàn thành</option>
+                                    <option value="CANCELLED" th:selected="${order.status.name() == 'CANCELLED'}">Đã hủy</option>
                                 </select>
-                                <button type="submit" class="btn btn-sm btn-primary text-nowrap">
-                                    <i class="bi bi-check2-circle"></i> Lưu
-                                </button>
                             </form>
                         </td>
+                    </tr>
+                    <tr th:if="${orders.empty}">
+                        <td colspan="8" class="text-center py-4 text-muted">Chưa có đơn hàng nào.</td>
                     </tr>
                     </tbody>
                 </table>
 
+                <nav th:if="${totalPages != null and totalPages > 1}" aria-label="Page navigation" class="mt-4 mb-3">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                            <a class="page-link shadow-sm" th:href="@{/admin/orders(page=${currentPage - 1})}"><i class="bi bi-chevron-left"></i> Trước</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${currentPage == i ? 'active' : ''}">
+                            <a class="page-link shadow-sm" th:href="@{/admin/orders(page=${i})}" th:text="${i}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
+                            <a class="page-link shadow-sm" th:href="@{/admin/orders(page=${currentPage + 1})}">Sau <i class="bi bi-chevron-right"></i></a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
-            <nav th:if="${totalPages > 1}" aria-label="Page navigation" class="mt-4 mb-3">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
-                        <a class="page-link shadow-sm" th:href="@{/admin/orders(page=${currentPage - 1})}"><i class="bi bi-chevron-left"></i> Trước</a>
-                    </li>
-                    <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${currentPage == i ? 'active' : ''}">
-                        <a class="page-link shadow-sm" th:href="@{/admin/orders(page=${i})}" th:text="${i}"></a>
-                    </li>
-                    <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
-                        <a class="page-link shadow-sm" th:href="@{/admin/orders(page=${currentPage + 1})}">Sau <i class="bi bi-chevron-right"></i></a>
-                    </li>
-                </ul>
-            </nav>
         </div>
     </div>
 </div>
-
 
 <footer>
     <div class="container d-flex justify-content-between align-items-center">

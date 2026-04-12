@@ -1,4 +1,4 @@
-package com.DoAn.Web_QLDH_DichVu.controller;
+package com.DoAn.Web_QLDH_DichVu.controller.admin;
 
 import com.DoAn.Web_QLDH_DichVu.entity.Notification;
 import com.DoAn.Web_QLDH_DichVu.entity.User;
@@ -51,10 +51,10 @@ public class AdminUserController {
     // 2. Thêm mới người dùng
     @PostMapping("/create")
     public String createUser(@RequestParam String username,
-                             @RequestParam String password,
-                             @RequestParam String email,
-                             @RequestParam Role role,
-                             RedirectAttributes redirectAttributes) {
+            @RequestParam String password,
+            @RequestParam String email,
+            @RequestParam Role role,
+            RedirectAttributes redirectAttributes) {
         try {
             if (userRepository.findByUsername(username).isPresent()) {
                 throw new RuntimeException("Tên đăng nhập đã tồn tại trong hệ thống!");
@@ -80,15 +80,16 @@ public class AdminUserController {
     // 3. Sửa thông tin & Set Role
     @PostMapping("/update/{id}")
     public String updateUser(@PathVariable Long id,
-                             @RequestParam String email,
-                             @RequestParam Role role,
-                             @RequestParam(required = false) String password,
-                             @RequestParam(required = false) BigDecimal balanceAmount,
-                             @RequestParam(required = false) String balanceAction,
+            @RequestParam String email,
+            @RequestParam Role role,
+            @RequestParam(required = false) String password,
+            @RequestParam(required = false) BigDecimal balanceAmount,
+            @RequestParam(required = false) String balanceAction,
 
-                             RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
         try {
-            User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng."));
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng."));
 
             user.setEmail(email);
             user.setRole(role);
@@ -117,7 +118,8 @@ public class AdminUserController {
             }
 
             userRepository.save(user);
-            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật tài khoản [" + user.getUsername() + "] thành công!");
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Cập nhật tài khoản [" + user.getUsername() + "] thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
         }
@@ -128,19 +130,24 @@ public class AdminUserController {
     @PostMapping("/delete/{id}")
     public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng."));
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng."));
 
             // LOGIC BẢO VỆ ADMIN: Tránh bị bay màu
             if (user.getRole().name().equals("ADMIN")) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa tài khoản mang quyền Quản trị viên (ADMIN)!");
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "Không thể xóa tài khoản mang quyền Quản trị viên (ADMIN)!");
                 return "redirect:/admin/users";
             }
 
             userRepository.delete(user);
-            redirectAttributes.addFlashAttribute("successMessage", "Đã xóa vĩnh viễn tài khoản [" + user.getUsername() + "].");
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Đã xóa vĩnh viễn tài khoản [" + user.getUsername() + "].");
         } catch (Exception e) {
-            // Nếu user đã có lịch sử nạp tiền hoặc đơn hàng, Database sẽ báo lỗi khóa ngoại (Foreign Key) không cho xóa
-            redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa! Người dùng này đang chứa dữ liệu Đơn hàng hoặc Lịch sử nạp tiền trong hệ thống.");
+            // Nếu user đã có lịch sử nạp tiền hoặc đơn hàng, Database sẽ báo lỗi khóa ngoại
+            // (Foreign Key) không cho xóa
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Không thể xóa! Người dùng này đang chứa dữ liệu Đơn hàng hoặc Lịch sử nạp tiền trong hệ thống.");
         }
         return "redirect:/admin/users";
     }
@@ -149,7 +156,8 @@ public class AdminUserController {
     @PostMapping("/toggle-lock/{id}")
     public String toggleLock(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng."));
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng."));
             if (user.getRole().name().equals("ADMIN")) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Không thể khóa tài khoản của Quản trị viên!");
                 return "redirect:/admin/users";
@@ -161,24 +169,25 @@ public class AdminUserController {
             if (!user.isLocked()) {
                 notificationRepo.save(Notification.builder()
                         .user(user)
-                        .message("🔓 Báo hỷ: Tài khoản của bạn đã được Admin MỞ KHÓA. Chào mừng quay trở lại hệ thống SMM Panel!")
+                        .message(
+                                "🔓 Báo hỷ: Tài khoản của bạn đã được Admin MỞ KHÓA. Chào mừng quay trở lại hệ thống SMM Panel!")
                         .isRead(false)
                         .build());
             }
 
-            redirectAttributes.addFlashAttribute("successMessage", "Đã " + (user.isLocked() ? "Khóa" : "Mở khóa") + " tài khoản [" + user.getUsername() + "] thành công!");
+            redirectAttributes.addFlashAttribute("successMessage", "Đã " + (user.isLocked() ? "Khóa" : "Mở khóa")
+                    + " tài khoản [" + user.getUsername() + "] thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
         }
         return "redirect:/admin/users";
     }
 
-
     // so du
-    @PostMapping("/admin/users/update-balance")
+    @PostMapping("/update-balance")
     public String updateBalance(@RequestParam Long userId,
-                                @RequestParam String action,
-                                @RequestParam BigDecimal amount) {
+            @RequestParam String action,
+            @RequestParam BigDecimal amount) {
 
         userRepository.findById(userId).ifPresent(user -> {
 
