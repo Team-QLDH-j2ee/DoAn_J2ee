@@ -1,4 +1,4 @@
-package com.DoAn.Web_QLDH_DichVu.controller;
+package com.DoAn.Web_QLDH_DichVu.controller.admin;
 
 import com.DoAn.Web_QLDH_DichVu.enums.OrderStatus;
 import com.DoAn.Web_QLDH_DichVu.repository.BuffOrderRepository;
@@ -45,8 +45,8 @@ public class AdminOrderController {
     // 2. Xử lý khi Admin đổi trạng thái đơn hàng
     @PostMapping("/update-status/{id}")
     public String updateOrderStatus(@PathVariable Long id,
-                                    @RequestParam OrderStatus status,
-                                    RedirectAttributes redirectAttributes) {
+            @RequestParam OrderStatus status,
+            RedirectAttributes redirectAttributes) {
         try {
             orderService.updateOrderStatusByAdmin(id, status);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái đơn #" + id + " thành công!");

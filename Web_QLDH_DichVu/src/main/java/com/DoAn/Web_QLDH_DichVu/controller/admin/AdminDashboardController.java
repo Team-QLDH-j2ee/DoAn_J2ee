@@ -1,4 +1,4 @@
-package com.DoAn.Web_QLDH_DichVu.controller;
+package com.DoAn.Web_QLDH_DichVu.controller.admin;
 
 import com.DoAn.Web_QLDH_DichVu.entity.BuffOrder;
 import com.DoAn.Web_QLDH_DichVu.repository.BuffOrderRepository;

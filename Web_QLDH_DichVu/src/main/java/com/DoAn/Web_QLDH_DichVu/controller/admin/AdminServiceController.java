@@ -1,4 +1,4 @@
-package com.DoAn.Web_QLDH_DichVu.controller;
+package com.DoAn.Web_QLDH_DichVu.controller.admin;
 
 import com.DoAn.Web_QLDH_DichVu.entity.ServiceSetting;
 import com.DoAn.Web_QLDH_DichVu.repository.ServiceSettingRepository;
@@ -42,10 +42,10 @@ public class AdminServiceController {
     // 2. Xử lý thêm dịch vụ mới
     @PostMapping("/add")
     public String addService(@RequestParam String serviceName,
-                             @RequestParam String platform, // Cập nhật tham số platform
-                             @RequestParam BigDecimal basePrice,
-                             @RequestParam int defaultQuantity,
-                             RedirectAttributes redirectAttributes) {
+            @RequestParam String platform, // Cập nhật tham số platform
+            @RequestParam BigDecimal basePrice,
+            @RequestParam int defaultQuantity,
+            RedirectAttributes redirectAttributes) {
         try {
             ServiceSetting newService = ServiceSetting.builder()
                     .serviceName(serviceName)
@@ -70,7 +70,8 @@ public class AdminServiceController {
             settingRepo.deleteById(id);
             redirectAttributes.addFlashAttribute("successMessage", "Đã xóa dịch vụ thành công!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa. Có thể dịch vụ này đang có đơn hàng ràng buộc.");
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Không thể xóa. Có thể dịch vụ này đang có đơn hàng ràng buộc.");
         }
         return "redirect:/admin/services";
     }
@@ -78,11 +79,11 @@ public class AdminServiceController {
     // 4. Xử lý Cập nhật (Sửa) dịch vụ
     @PostMapping("/edit/{id}")
     public String editService(@PathVariable Long id,
-                              @RequestParam String serviceName,
-                              @RequestParam String platform,
-                              @RequestParam BigDecimal basePrice,
-                              @RequestParam int defaultQuantity,
-                              RedirectAttributes redirectAttributes) {
+            @RequestParam String serviceName,
+            @RequestParam String platform,
+            @RequestParam BigDecimal basePrice,
+            @RequestParam int defaultQuantity,
+            RedirectAttributes redirectAttributes) {
         try {
             // Tìm dịch vụ cũ trong DB
             ServiceSetting existingService = settingRepo.findById(id)

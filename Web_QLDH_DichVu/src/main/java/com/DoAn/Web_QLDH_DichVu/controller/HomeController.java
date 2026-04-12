@@ -13,7 +13,8 @@ public class HomeController {
         // Kiểm tra xem người dùng đã đăng nhập chưa
         if (principal != null) {
             // Đã đăng nhập
-            model.addAttribute("welcomeMessage", "Xin chào " + principal.getName() + ", mừng bạn quay lại hệ thống SMM Panel!");
+            model.addAttribute("welcomeMessage",
+                    "Xin chào " + principal.getName() + ", mừng bạn quay lại hệ thống SMM Panel!");
             model.addAttribute("isLoggedIn", true); // Cờ báo hiệu cho giao diện
         } else {
             // Chưa đăng nhập
@@ -22,5 +23,10 @@ public class HomeController {
         }
 
         return "index"; // Trả về file index.html
+    }
+
+    @GetMapping("/access-denied")
+    public String accessDenied() {
+        return "access-denied";
     }
 }

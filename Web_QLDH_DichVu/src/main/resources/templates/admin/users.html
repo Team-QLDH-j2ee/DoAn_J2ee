@@ -121,23 +121,25 @@
 
                         <td class="text-end pe-4 text-nowrap">
 
-                            <button type="button" class="btn btn-sm btn-outline-primary fw-bold shadow-sm" data-bs-toggle="modal" th:data-bs-target="'#editUserModal' + ${u.id}" title="Chỉnh Sửa">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
-
-                            <form th:if="${u.role.name() == 'CUSTOMER'}" th:action="@{/admin/users/toggle-lock/{id}(id=${u.id})}" method="post" class="d-inline"
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn đổi trạng thái đăng nhập của tài khoản này?');">
-                                <button type="submit" class="btn btn-sm shadow-sm fw-bold" th:classappend="${u.isLocked() ? 'btn-success' : 'btn-outline-warning'}" th:title="${u.isLocked() ? 'Mở Khóa' : 'Khóa Tài Khoản'}">
-                                    <i class="bi" th:classappend="${u.isLocked() ? 'bi-unlock' : 'bi-lock'}"></i>
+                            <th:block th:if="${u.role.name() == 'CUSTOMER'}">
+                                <button type="button" class="btn btn-sm btn-outline-primary fw-bold shadow-sm" data-bs-toggle="modal" th:data-bs-target="'#editUserModal' + ${u.id}" title="Chỉnh Sửa">
+                                    <i class="bi bi-pencil-square"></i>
                                 </button>
-                            </form>
 
-                            <form th:if="${u.role.name() == 'CUSTOMER'}" th:action="@{/admin/users/delete/{id}(id=${u.id})}" method="post" class="d-inline"
-                                  onsubmit="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản này không? Mọi dữ liệu sẽ biến mất!');">
-                                <button type="submit" class="btn btn-sm btn-outline-danger fw-bold shadow-sm" title="Xóa Tài Khoản">
-                                    <i class="bi bi-trash3-fill"></i>
-                                </button>
-                            </form>
+                                <form th:action="@{/admin/users/toggle-lock/{id}(id=${u.id})}" method="post" class="d-inline"
+                                      onsubmit="return confirm('Bạn có chắc chắn muốn đổi trạng thái đăng nhập của tài khoản này?');">
+                                    <button type="submit" class="btn btn-sm shadow-sm fw-bold" th:classappend="${u.isLocked() ? 'btn-success' : 'btn-outline-warning'}" th:title="${u.isLocked() ? 'Mở Khóa' : 'Khóa Tài Khoản'}">
+                                        <i class="bi" th:classappend="${u.isLocked() ? 'bi-unlock' : 'bi-lock'}"></i>
+                                    </button>
+                                </form>
+
+                                <form th:action="@{/admin/users/delete/{id}(id=${u.id})}" method="post" class="d-inline"
+                                      onsubmit="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản này không? Mọi dữ liệu sẽ biến mất!');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger fw-bold shadow-sm" title="Xóa Tài Khoản">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </form>
+                            </th:block>
 
                             <span th:if="${u.role.name() == 'ADMIN'}" class="text-danger fw-bold ms-2" style="font-size: 0.85rem;"><i class="bi bi-shield-check"></i> Bất tử</span>
 

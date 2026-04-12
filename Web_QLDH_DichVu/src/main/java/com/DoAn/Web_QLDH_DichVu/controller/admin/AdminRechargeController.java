@@ -1,4 +1,4 @@
-package com.DoAn.Web_QLDH_DichVu.controller;
+package com.DoAn.Web_QLDH_DichVu.controller.admin;
 
 import com.DoAn.Web_QLDH_DichVu.enums.RequestStatus;
 import com.DoAn.Web_QLDH_DichVu.repository.RechargeRequestRepository; // IMPORT KHO CHỨA
@@ -44,11 +44,13 @@ public class AdminRechargeController {
 
     // Nút Duyệt / Từ chối
     @PostMapping("/process/{id}")
-    public String processRequest(@PathVariable Long id, @RequestParam RequestStatus status, RedirectAttributes redirectAttributes) {
+    public String processRequest(@PathVariable Long id, @RequestParam RequestStatus status,
+            RedirectAttributes redirectAttributes) {
         try {
             rechargeService.processRechargeRequest(id, status);
             String action = status == RequestStatus.APPROVED ? "DUYỆT và CỘNG TIỀN" : "TỪ CHỐI";
-            redirectAttributes.addFlashAttribute("successMessage", "Đã " + action + " phiếu nạp #" + id + " thành công!");
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Đã " + action + " phiếu nạp #" + id + " thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
         }

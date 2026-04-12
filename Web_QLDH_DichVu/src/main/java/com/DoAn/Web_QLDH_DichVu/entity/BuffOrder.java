@@ -14,8 +14,6 @@ public class BuffOrder {
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "user_id", nullable = false) private User user;
     @Column(nullable = false, length = 500) private String targetLink;
     private int quantity;
-    private int initialCount;
-    private int currentCount;
     @Column(precision = 15, scale = 2) private BigDecimal price;
     @Enumerated(EnumType.STRING) private OrderStatus status;
     private LocalDateTime createdAt;

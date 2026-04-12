@@ -28,7 +28,6 @@ public class BuffOrderService {
     private final BuffOrderRepository orderRepo;
     private final UserRepository userRepo;
     private final ServiceSettingRepository settingRepo;
-    private final ScraperService scraperService;
 
     // ĐÃ THÊM KHO THÔNG BÁO VÀO ĐÂY
     private final NotificationRepository notificationRepo;
@@ -44,16 +43,21 @@ public class BuffOrderService {
 
         BigDecimal totalCost = serviceSetting.getBasePrice().multiply(BigDecimal.valueOf(quantity));
 
-        log.info("Đang lấy initialCount cho link: {}", targetLink);
-        int initialCount = scraperService.getInitialCount(targetLink);
+        // Kiểm tra số dư trước khi tạo đơn
+        if (user.getBalance().compareTo(totalCost) < 0) {
+            BigDecimal shortfall = totalCost.subtract(user.getBalance());
+            throw new RuntimeException(
+                    "Số dư không đủ! Tổng đơn: " +
+                            String.format("%,.0f", totalCost) + " đ | Số dư hiện tại: " +
+                            String.format("%,.0f", user.getBalance()) + " đ | Cần nạp thêm: " +
+                            String.format("%,.0f", shortfall) + " đ");
+        }
 
         // Tạo đơn với trạng thái PENDING (Chờ thanh toán), chưa trừ tiền User
         BuffOrder newOrder = BuffOrder.builder()
                 .user(user)
                 .targetLink(targetLink)
                 .quantity(quantity)
-                .initialCount(initialCount)
-                .currentCount(initialCount)
                 .price(totalCost)
                 .status(OrderStatus.PENDING) // Quan trọng: Đổi thành PENDING
                 .createdAt(LocalDateTime.now())
@@ -173,16 +177,24 @@ public class BuffOrderService {
         // Dịch trạng thái sang Tiếng Việt cho sinh động
         String statusVn = "";
         switch (newStatus.name()) {
-            case "IN_PROGRESS": statusVn = "ĐANG CHẠY 🚀"; break;
-            case "COMPLETED": statusVn = "HOÀN THÀNH ✅"; break;
-            case "CANCELLED": statusVn = "ĐÃ HỦY ❌"; break;
-            default: statusVn = "CHỜ XỬ LÝ ⏳";
+            case "IN_PROGRESS":
+                statusVn = "ĐANG CHẠY 🚀";
+                break;
+            case "COMPLETED":
+                statusVn = "HOÀN THÀNH ✅";
+                break;
+            case "CANCELLED":
+                statusVn = "ĐÃ HỦY ❌";
+                break;
+            default:
+                statusVn = "CHỜ XỬ LÝ ⏳";
         }
 
         // Tự động bắn thông báo cho Khách hàng
         notificationRepo.save(Notification.builder()
                 .user(order.getUser())
-                .message("📦 Đơn hàng #" + order.getId() + " (" + order.getTargetLink() + ") vừa được cập nhật sang trạng thái: " + statusVn)
+                .message("📦 Đơn hàng #" + order.getId() + " (" + order.getTargetLink()
+                        + ") vừa được cập nhật sang trạng thái: " + statusVn)
                 .isRead(false)
                 .build());
     }

@@ -1,9 +1,10 @@
-package com.DoAn.Web_QLDH_DichVu.controller;
+package com.DoAn.Web_QLDH_DichVu.controller.admin;
 
 import com.DoAn.Web_QLDH_DichVu.entity.ContactMessage;
 import com.DoAn.Web_QLDH_DichVu.entity.Notification;
 import com.DoAn.Web_QLDH_DichVu.repository.ContactMessageRepository;
 import com.DoAn.Web_QLDH_DichVu.repository.NotificationRepository;
+import com.DoAn.Web_QLDH_DichVu.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
@@ -14,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -27,6 +27,7 @@ public class AdminContactController {
 
     private final ContactMessageRepository contactRepo;
     private final NotificationRepository notificationRepo; // Bơm kho chuông vào
+    private final EmailService emailService;
 
     // 1. Mở trang danh sách tin nhắn
 
@@ -67,12 +68,18 @@ public class AdminContactController {
             msg.setProcessed(true); // Cập nhật trạng thái
             contactRepo.save(msg);
 
+            // Gửi email thông báo cho khách khi Admin đã tiếp nhận
+            if (msg.getEmail() != null && !msg.getEmail().isEmpty()) {
+                emailService.sendContactConfirmationEmail(msg.getEmail(), msg.getName());
+            }
+
             // Nếu tin nhắn có dính với User (khách đã đăng nhập khi gửi) -> Bắn chuông
             if (msg.getUser() != null) {
                 notificationRepo.save(Notification.builder()
                         .user(msg.getUser())
                         .message("✅ Yêu cầu hỗ trợ lúc " +
-                                String.format("%02d:%02d", msg.getCreatedAt().getHour(), msg.getCreatedAt().getMinute()) +
+                                String.format("%02d:%02d", msg.getCreatedAt().getHour(), msg.getCreatedAt().getMinute())
+                                +
                                 " đã được Admin tiếp nhận và đang xử lý!")
                         .isRead(false)
                         .createdAt(LocalDateTime.now())

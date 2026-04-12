@@ -39,4 +39,7 @@ public class User {
 
     @Column(name = "recharge_code", unique = true, length = 50)
     private String rechargeCode;
+
+    @Column(name = "reset_token", length = 100)
+    private String resetToken;
 }
