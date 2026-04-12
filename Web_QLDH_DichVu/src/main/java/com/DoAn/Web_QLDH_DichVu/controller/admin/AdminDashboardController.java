@@ -23,12 +23,10 @@ public class AdminDashboardController {
 
     @GetMapping
     public String showDashboard(Model model) {
-        // 1. Lấy số liệu tổng quan hiển thị lên 3 thẻ Card
         model.addAttribute("totalUsers", userRepo.count());
         model.addAttribute("totalOrders", orderRepo.count());
         model.addAttribute("totalRechargeRequests", rechargeRepo.count());
 
-        // 2. CHUẨN BỊ DỮ LIỆU CHO BIỂU ĐỒ (Phân tích trạng thái đơn hàng)
         List<BuffOrder> allOrders = orderRepo.findAll();
 
         long pending = allOrders.stream().filter(o -> o.getStatus().name().equals("PENDING")).count();
@@ -36,7 +34,6 @@ public class AdminDashboardController {
         long completed = allOrders.stream().filter(o -> o.getStatus().name().equals("COMPLETED")).count();
         long cancelled = allOrders.stream().filter(o -> o.getStatus().name().equals("CANCELLED")).count();
 
-        // Đóng gói thành 1 mảng [Chờ xử lý, Đang chạy, Hoàn thành, Đã hủy] gửi ra View
         model.addAttribute("chartData", List.of(pending, inProgress, completed, cancelled));
 
         return "admin/dashboard";

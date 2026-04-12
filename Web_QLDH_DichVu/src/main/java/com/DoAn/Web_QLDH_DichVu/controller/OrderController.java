@@ -99,33 +99,4 @@ public class OrderController {
         return "redirect:/order/history";
     }
 
-    // MỚI: Xử lý Hủy đơn hàng
-    @PostMapping("/cancel/{id}")
-    public String cancelOrder(@PathVariable Long id, Principal principal, RedirectAttributes redirectAttributes) {
-        if (principal == null) return "redirect:/login";
-        try {
-            orderService.cancelOrder(id, principal.getName());
-            redirectAttributes.addFlashAttribute("successMessage", "Đã hủy đơn hàng #" + id + " thành công.");
-        } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-        }
-        return "redirect:/order/history";
-    }
-
-    // MỚI: Xử lý Sửa đơn hàng
-    @PostMapping("/edit/{id}")
-    public String editOrder(@PathVariable Long id,
-                            @RequestParam String targetLink,
-                            @RequestParam int quantity,
-                            Principal principal,
-                            RedirectAttributes redirectAttributes) {
-        if (principal == null) return "redirect:/login";
-        try {
-            orderService.updatePendingOrder(id, principal.getName(), targetLink, quantity);
-            redirectAttributes.addFlashAttribute("successMessage", "Đã cập nhật đơn hàng #" + id + " thành công.");
-        } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-        }
-        return "redirect:/order/history";
-    }
 }

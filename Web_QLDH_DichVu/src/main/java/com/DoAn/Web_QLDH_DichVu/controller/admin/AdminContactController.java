@@ -26,10 +26,9 @@ import java.util.List;
 public class AdminContactController {
 
     private final ContactMessageRepository contactRepo;
-    private final NotificationRepository notificationRepo; // Bơm kho chuông vào
+    private final NotificationRepository notificationRepo;
     private final EmailService emailService;
 
-    // 1. Mở trang danh sách tin nhắn
 
     @GetMapping
     public String listContacts(
@@ -41,8 +40,10 @@ public class AdminContactController {
             model.addAttribute("username", principal.getName());
         }
 
-        int pageSize = 5; // 10 tin nhắn 1 trang
-        Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(
+                page - 1, pageSize,
+                Sort.by(Sort.Direction.DESC, "createdAt"));
 
         Page<ContactMessage> pageData = contactRepo.findAll(pageable);
 
@@ -53,7 +54,6 @@ public class AdminContactController {
         return "admin/contacts";
     }
 
-    // 2. Nút Xóa tin nhắn
     @PostMapping("/delete/{id}")
     public String deleteMessage(@PathVariable Long id, RedirectAttributes ra) {
         contactRepo.deleteById(id);
@@ -61,19 +61,16 @@ public class AdminContactController {
         return "redirect:/admin/contacts";
     }
 
-    // 3. NÚT TIẾP NHẬN & BẮN CHUÔNG CHO KHÁCH
     @PostMapping("/process/{id}")
     public String processMessage(@PathVariable Long id, RedirectAttributes ra) {
         contactRepo.findById(id).ifPresent(msg -> {
-            msg.setProcessed(true); // Cập nhật trạng thái
+            msg.setProcessed(true);
             contactRepo.save(msg);
 
-            // Gửi email thông báo cho khách khi Admin đã tiếp nhận
             if (msg.getEmail() != null && !msg.getEmail().isEmpty()) {
                 emailService.sendContactConfirmationEmail(msg.getEmail(), msg.getName());
             }
 
-            // Nếu tin nhắn có dính với User (khách đã đăng nhập khi gửi) -> Bắn chuông
             if (msg.getUser() != null) {
                 notificationRepo.save(Notification.builder()
                         .user(msg.getUser())
@@ -86,7 +83,6 @@ public class AdminContactController {
                         .build());
             }
         });
-
         ra.addFlashAttribute("successMessage", "Đã tiếp nhận và thông báo cho khách!");
         return "redirect:/admin/contacts";
     }
